@@ -1,10 +1,14 @@
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QMimeData>
+
 #include "mlistwidget.h"
 
-MListWidget::MListWidget(QWidget *parent) :
-    QListWidget(parent)
+/**
+ * @brief MListWidget::MListWidget - создает объект списка элементов, доступных для добавления
+ * @param parent - неведомо
+ */
+MListWidget::MListWidget(QWidget *parent) : QListWidget(parent)
 {
     setDragEnabled(true);
     setAcceptDrops(true);
@@ -12,6 +16,10 @@ MListWidget::MListWidget(QWidget *parent) :
     setDragDropMode(DragOnly);
 }
 
+/**
+ * @brief MListWidget::startDrag - начало события перетягивания
+ * @param acts - флаги
+ */
 void MListWidget::startDrag(Qt::DropActions acts)
 {
     QListWidgetItem *item = currentItem();
@@ -19,13 +27,9 @@ void MListWidget::startDrag(Qt::DropActions acts)
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-//    QStringList tmp = item->text().split(",");
-//    foreach(QString str, tmp)
-//        dataStream << str.toLocal8Bit();
     int32_t type = item->type();
 
     QMimeData *mimeData = new QMimeData;
-    //mimeData->setData(MListWidget::puzzleMimeType(), itemData);
     mimeData->setText(QString::number(type));
 
     QDrag *drag = new QDrag(this);

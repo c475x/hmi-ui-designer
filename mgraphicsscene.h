@@ -4,11 +4,14 @@
 #include <QDragEnterEvent>
 #include <QGraphicsSceneDragDropEvent>
 #include <QGraphicsScene>
-#include <QMimeData>
 #include <QGraphicsRectItem>
-//#include "mgraph.h"
+#include <QTransform>
+
 #include "mguiitemsmodel.h"
 
+/**
+ * @brief MGraphicsScene - класс графической сцены
+ */
 class MGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -26,9 +29,9 @@ public:
     }
 
 protected:
-    QGraphicsRectItem* background = nullptr;
-    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* event) override;
-    virtual void dropEvent(QGraphicsSceneDragDropEvent* event) override;
+    QGraphicsRectItem *background = nullptr;
+    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent *event) override;
+    virtual void dropEvent(QGraphicsSceneDragDropEvent *event) override;
 
 signals:
     void newItem(GuiType id);

@@ -6,6 +6,7 @@
 #include <QStandardItemModel>
 #include <QEvent>
 #include <QLabel>
+
 #include "mguiitemsmodel.h"
 #include "mgraph.h"
 #include "mgraphicsscene.h"
@@ -17,6 +18,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainForm; }
 QT_END_NAMESPACE
 
+/**
+ * @brief MainForm - класс главной формы приложения
+ */
 class MainForm : public QMainWindow
 {
     Q_OBJECT
@@ -34,6 +38,7 @@ private:
     MListWidget *listPalette;
     QLabel *status;
     QStringList tempPropertyList;
+
     //void onMouseMove(QGraphicsSceneMouseEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
 

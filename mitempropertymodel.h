@@ -1,7 +1,3 @@
-/*
- * Класс описывает свойства графических элементов
- *
- */
 #ifndef MITEMPROPERTY_H
 #define MITEMPROPERTY_H
 
@@ -22,12 +18,12 @@ typedef struct _PropItem
 } PropItem;
 
 /**
- * @brief The MItemProperty class - класс набора свойств определенного объекта
+ * @brief MItemProperty - класс набора свойств определенного объекта
  */
 class MItemProperty
 {
 public:
-    MItemProperty(GuiType gui_type);
+    MItemProperty(GuiType guiType);
     ~MItemProperty();
     void addProperty(PropType type, QString name, QVariant data = QVariant());
     int32_t getSize() {return items.size();}
@@ -35,19 +31,19 @@ public:
     void setProperty(int32_t index, QVariant value);
 
 protected:
-    GuiType gui_type;
+    GuiType guiType;
     QVector<PropItem *> items;
 };
 
 /**
- * @brief The MItemPropertyModel class - класс модели отображения свойств объекта на экране
+ * @brief MItemPropertyModel - класс модели отображения свойств объекта на экране
  */
 class MItemPropertyModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
     MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) {pCurPropList = NULL;}
-    ~MItemPropertyModel() {}
+    ~MItemPropertyModel() { }
     //void setGuiType(GuiType gui_type);
     //void setGuiType(QString str);
     void setPropCur(int32_t index, QVariant value);

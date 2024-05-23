@@ -21,12 +21,12 @@ int MGuiItemsModel::rowCount(const QModelIndex &parent) const
 QVariant MGuiItemsModel::data(const QModelIndex &index, int role) const
 {
     int x, y;
-    switch(role)
+    switch (role)
     {
         case Qt::DisplayRole:
             x = index.column();
             y = index.row();
-            if(x < items.length())
+            if (x < items.length())
             {
                 return QVariant("[" + QString(items.at(y)->type) + "]");
             }
@@ -35,31 +35,33 @@ QVariant MGuiItemsModel::data(const QModelIndex &index, int role) const
 
         break;
     }
+
     return QVariant();
 }
 
 /**
  * @brief MGuiItemsModel::addItem - функция добавляет в хранилище новый элемент управления
- * @param type
+ * @param type - тип элемента управления
  */
 void MGuiItemsModel::addItem(GuiType type)
 {
     MBase *temp;
-    switch(type)
+    switch (type)
     {
         case GuiIconSet:
             temp = new MIconSet(QPointF(0, 0), QSize(8, 8));
         break;
         case GuiLabel:
-            temp = new MLabel(QRectF(QPointF(0, 0), QSizeF(5*6, 8)), "label");
+            temp = new MLabel("label", QRectF(QPointF(0, 0), QSizeF(5*6, 8)));
         break;
         case GuiProgress:
-            temp = new MProgress(QRectF(QPointF(0, (64-8)), QSizeF(128, 8)));
+            temp = new MProgress("", QRectF(QPointF(0, (64-8)), QSizeF(128, 8)));
         break;
         case GuiMenu:
             temp = new MMenu(QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
         break;
     }
+
     scene->addItem(temp);
     beginResetModel();
     items.append(temp);
@@ -82,15 +84,21 @@ void MGuiItemsModel::newItem(GuiType id)
 void MGuiItemsModel::selectItem(int32_t id)
 {
     // Перебираем все элементы из хранилища
-    for(int32_t i=0; i<items.length(); i++)
+    for (int32_t i = 0; i < items.length(); i++)
         // Меняем всем признаки выбора
         items[i]->setSelected(i == id);
+
     scene->update();
 }
 
+/**
+ * @brief MGuiItemsModel::getItem - функция получения элемента по его номеру
+ * @param index - номер получаемого элемента
+ * @return - сам элемент
+ */
 MBase *MGuiItemsModel::getItem(int32_t index)
 {
-    if(index < items.size())
+    if (index < items.size())
         return items.at(index);
     else
         return NULL;

@@ -9,6 +9,9 @@
 #include <QPushButton>
 #include <QLineEdit>
 
+/**
+ * @brief MListEditor - класс диалогового окна редактора строк
+ */
 class MListEditor : public QDialog
 {
     Q_OBJECT

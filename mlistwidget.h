@@ -4,11 +4,13 @@
 #include <QWidget>
 #include <QListWidget>
 
+/**
+ * @brief MListWidget - класс списка элементов, доступных для добавления
+ */
 class MListWidget : public QListWidget
 {
 public:
     MListWidget(QWidget *parent = 0);
-    //static QString puzzleMimeType() { return QStringLiteral("image/x-puzzle-piece"); }
 
 protected:
     //void dragEnterEvent(QDragEnterEvent *event) override;

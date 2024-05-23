@@ -1,8 +1,9 @@
 #ifndef MTYPES_H
 #define MTYPES_H
 
-#define PC_SCALE    4   // Коэффициент масштабирования экрана компьютера относительно реального размера дисплея
+#define PC_SCALE 4 // Коэффициент масштабирования экрана компьютера относительно реального размера дисплея
 
+// Типы графических элементов
 typedef enum
 {
 	GuiIconSet,
@@ -13,6 +14,7 @@ typedef enum
 	GuiNone
 } GuiType;
 
+// Типы свойств графических элементов
 typedef enum
 {
     PropString,

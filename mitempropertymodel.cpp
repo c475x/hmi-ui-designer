@@ -1,15 +1,19 @@
 #include <QPushButton>
+
 #include "mitempropertymodel.h"
 
+//
 // ----------------------------------- MItemProperty -----------------------------------
-MItemProperty::MItemProperty(GuiType gui_type)
+//
+
+MItemProperty::MItemProperty(GuiType guiType)
 {
     items.clear();
     items.append(new PropItem("X", PropNumber, 0));
     items.append(new PropItem("Y", PropNumber, 0));
     items.append(new PropItem("Width", PropNumber, 0));
-    items.append(new PropItem("Heigh", PropNumber, 0));
-    switch(gui_type)
+    items.append(new PropItem("Height", PropNumber, 0));
+    switch (guiType)
     {
         case GuiIconSet:
             items.append(new PropItem("Icons", PropFiles, QStringList()));
@@ -27,13 +31,16 @@ MItemProperty::MItemProperty(GuiType gui_type)
         break;
         case GuiProgress:
             items.append(new PropItem("Value", PropNumber, 0));
+            items.append(new PropItem("Min", PropNumber, 0));
+            items.append(new PropItem("Max", PropNumber, 0));
             items.append(new PropItem("Text", PropString, ""));
             items.append(new PropItem("Font", PropNumber, 0));
         break;
         case GuiCombo:
         break;
     }
-    this->gui_type = gui_type;
+
+    this->guiType = guiType;
 }
 
 MItemProperty::~MItemProperty()
@@ -49,24 +56,28 @@ void MItemProperty::addProperty(PropType type, QString name, QVariant data)
 
 PropItem *MItemProperty::getProperty(int32_t index)
 {
-    if(index < items.size())
+    if (index < items.size())
         return items.at(index);
+
     return NULL;
 }
 
 void MItemProperty::setProperty(int32_t index, QVariant value)
 {
-    if(index < items.size())
+    if (index < items.size())
         items[index]->data = value;
 }
 
+//
 // ------------------------------------ MItemPropertyModel --------------------------------
+//
 
 int MItemPropertyModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    if(pCurPropList)
+    if (pCurPropList)
         return pCurPropList->getSize();
+
     return 0;
 }
 
@@ -78,23 +89,20 @@ int MItemPropertyModel::columnCount(const QModelIndex &parent) const
 
 QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 {
-    if(pCurPropList)
+    if (pCurPropList)
     {
-        //int x, y;
-        PropItem * pItem = pCurPropList->getProperty(index.row());
+        PropItem *pItem = pCurPropList->getProperty(index.row());
 
-        switch(role)
+        switch (role)
         {
             case Qt::DisplayRole:
-                //x = index.column();
-                //y = index.row();
-                if(pItem != NULL)
+                if (pItem != NULL)
                 {
-                    if(index.column() == 0) // Если первая колонка, то выводим имя параметра
+                    if (index.column() == 0) // Если первая колонка, то выводим имя параметра
                         return QVariant(pItem->name);
                     else
                     {
-                        switch(pItem->type) // Смотрим, какого типа поле свойства
+                        switch (pItem->type) // Смотрим, какого типа поле свойства
                         {
                             case PropString:    // Текстовая строка
                                 return QVariant(pItem->data);
@@ -121,11 +129,8 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 								return QVariant(info);
                             }
                             break;
-    //                        default:
-    //                            return QVariant();
                         }
                     }
-                        //return QVariant("[" + QString(props.at(y)->type) + "]");
                 }
             break;
             case Qt::BackgroundRole:
@@ -133,6 +138,7 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
             break;
         }
     }
+
     return QVariant();
 }
 
@@ -146,10 +152,10 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     Q_UNUSED(role)
-    if(pCurPropList)
+    if (pCurPropList)
     {
-        PropItem * pItem = pCurPropList->getProperty(index.row());
-        if(pItem)
+        PropItem *pItem = pCurPropList->getProperty(index.row());
+        if (pItem)
         {
             beginResetModel();
             pItem->data = value;
@@ -158,6 +164,7 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
             return true;
         }
     }
+
     return false;
 }
 
@@ -168,17 +175,18 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
  */
 Qt::ItemFlags MItemPropertyModel::flags(const QModelIndex &index) const
 {
-    if(index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
+    if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
         return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 void MItemPropertyModel::setPropCur(int32_t index, QVariant value)
 {
-    if(pCurPropList)
+    if (pCurPropList)
     {
-        PropItem * pItem = pCurPropList->getProperty(index);
-        if(pItem)
+        PropItem *pItem = pCurPropList->getProperty(index);
+        if (pItem)
         {
             beginResetModel();
             pItem->data = value;
@@ -189,33 +197,14 @@ void MItemPropertyModel::setPropCur(int32_t index, QVariant value)
 
 void MItemPropertyModel::setProp(GuiType gui, int32_t index, QVariant value)
 {
-    PropItem * pItem = pCurPropList->getProperty(index);
-    if(pItem)
+    PropItem *pItem = pCurPropList->getProperty(index);
+    if (pItem)
     {
         beginResetModel();
         pItem->data = value;
         endResetModel();
     }
 }
-
-//void MItemPropertyModel::setGuiType(GuiType gui_type)
-//{
-//    beginResetModel();
-//    this->gui_type = gui_type;
-//    endResetModel();
-//}
-
-//void MItemPropertyModel::setGuiType(QString str)
-//{
-//    if(!str.compare("icon"))
-//        setGuiType(GuiIconSet);
-//    else if(!str.compare("labl"))
-//        setGuiType(GuiLabel);
-//    else if(!str.compare("prgs"))
-//        setGuiType(GuiProgress);
-//    else if(!str.compare("menu"))
-//        setGuiType(GuiMenu);
-//}
 
 void MItemPropertyModel::setList(MItemProperty *list)
 {
@@ -231,10 +220,10 @@ PropItem *MItemPropertyModel::getProp(int32_t index)
 
 bool MItemPropertyModel::setFileList(int32_t index, QStringList data)
 {
-    PropItem * pItem = pCurPropList->getProperty(index);
-    if(pItem)
+    PropItem *pItem = pCurPropList->getProperty(index);
+    if (pItem)
     {
-        if((pItem->type == PropFiles) || (pItem->type == PropList))
+        if ((pItem->type == PropFiles) || (pItem->type == PropList))
         {
             beginResetModel();
             pItem->data = data;
@@ -242,5 +231,6 @@ bool MItemPropertyModel::setFileList(int32_t index, QStringList data)
             return true;
         }
     }
+
     return false;
 }

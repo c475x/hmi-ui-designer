@@ -1,32 +1,39 @@
 #ifndef MGRAPH_H
 #define MGRAPH_H
 
-#include <stdint.h>
+#include <cstdint>
+
 #include <QObject>
 #include <QGraphicsItem>
 #include <QImage>
 #include <QVector>
 #include <QString>
+
 #include "mitempropertymodel.h"
 
+/**
+ * @brief MBase - базовый класс графического элемента
+ */
 class MBase : public QGraphicsItem
 {
 public:
     MBase() {selected = false;}
-    ~MBase() {if(props) delete props;}
+    ~MBase() {if (props) delete props;}
     void setSelected(bool val) {selected = val;}
     const char *type;
     MItemProperty *props = NULL;
 
 protected:
-    //QRectF position;
     bool selected;
 };
 
+/**
+ * @brief MIconSet - класс элемента "Иконка"
+ */
 class MIconSet : public MBase
 {
 public:
-    MIconSet() : MIconSet(QPointF(0, 0), QSizeF(0, 0)) {}
+    MIconSet() : MIconSet(QPointF(0, 0), QSizeF(0, 0)) { }
     MIconSet(QPointF origin, QSizeF size);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -35,39 +42,42 @@ public:
     void setCurrent(int16_t pos);
 
 protected:
-    QVector<QImage> set;
+    QVector<QImage> iconset;
 };
 
+/**
+ * @brief MLabel - класс элемента "Надпись"
+ */
 class MLabel : public MBase
 {
 public:
-    MLabel() : MLabel(QRectF(0, 0, 0, 0), 0) {}
-    MLabel(QRectF position, QString str, uint8_t font = 0);
+    MLabel() : MLabel("", QRectF(0, 0, 0, 0)) { }
+    MLabel(QString label, QRectF position, uint8_t font = 0);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
-protected:
-
 };
 
 class MProgress : public MBase
 {
 public:
-    MProgress() : MProgress(QRectF(0, 0, 0, 0)) {}
-    MProgress(QRectF position);
-    //MProgress(int16_t min, int16_t max);
+    MProgress() : MProgress("", QRectF(0, 0, 0, 0)) { }
+    MProgress(QString label, QRectF position);
+    MProgress(QString label, QRectF position, int16_t min, int16_t max);
+    MProgress(int16_t min, int16_t max);
     void setValue(int16_t val);
-    //void  setRange(int16_t min, int16_t max);
+    void setRange(int16_t min, int16_t max);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 protected:
-    //QRectF position;
-    //int16_t min;
-    //int16_t max;
-    //int16_t val;
+    int16_t min;
+    int16_t max;
+    int16_t val;
 };
 
+/**
+ * @brief MMenu - класс элемента "Меню"
+ */
 class MMenu : public MBase
 {
 public:
