@@ -17,11 +17,11 @@ typedef enum
 // Типы свойств графических элементов
 typedef enum
 {
-    PropString,
-    PropNumber,
-    PropCombo,
-    PropFiles,
-    PropList
+	PropString,
+	PropNumber,
+	PropCombo,
+	PropFiles,
+	PropList
 } PropType;
 
 #endif // MTYPES_H

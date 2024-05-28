@@ -14,13 +14,13 @@
  */
 MIconSet::MIconSet(QPointF origin, QSizeF size)
 {
-    type = "icon";
-    props = new MItemProperty(GuiIconSet);
+	type = "icon";
+	props = new MItemProperty(GuiIconSet);
 
-    props->setProperty(0, origin.x());
-    props->setProperty(1, origin.y());
-    props->setProperty(2, size.width());
-    props->setProperty(3, size.height());
+	props->setProperty(0, origin.x());
+	props->setProperty(1, origin.y());
+	props->setProperty(2, size.width());
+	props->setProperty(3, size.height());
 }
 
 /**
@@ -29,12 +29,12 @@ MIconSet::MIconSet(QPointF origin, QSizeF size)
  */
 QRectF MIconSet::boundingRect() const
 {
-    return QRectF(
-        QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-        PC_SCALE * props->getProperty(1)->data.toInt()),
-        QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-        PC_SCALE * props->getProperty(3)->data.toInt())
-                );
+	return QRectF(
+		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
+		PC_SCALE * props->getProperty(1)->data.toInt()),
+		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
+		PC_SCALE * props->getProperty(3)->data.toInt())
+				);
 }
 
 /**
@@ -45,29 +45,34 @@ QRectF MIconSet::boundingRect() const
  */
 void MIconSet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(widget);
-    Q_UNUSED(option);
+	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
-    // Рисуем синий прямоугольник
-    QPen pen(Qt::DashLine);
-    QBrush brush(selected ? Qt::green : Qt::white);
-    pen.setColor(selected ? Qt::red : Qt::blue);
-    painter->setPen(pen);
-    painter->setBrush(brush);
-    painter->drawRect(boundingRect());
-    int16_t current = props->getProperty(5)->data.toInt();
-    if ((current >= 0) && (current < iconset.size()))
-    {
-        painter->setPen(Qt::SolidLine);
-        painter->setPen(Qt::black);
-        painter->drawImage(boundingRect(), iconset.at(current));
-    }
-    else
-    {
-        // Рисуем синий крест
-        painter->drawLine(boundingRect().topLeft(), boundingRect().bottomRight());
-        painter->drawLine(boundingRect().topRight(), boundingRect().bottomLeft());
-    }
+    // Цвет обводки по умолчанию синий, при выделении - красный
+    // Цвет фона по умолчанию белый, при выделении - зеленый
+	QPen pen(Qt::DashLine);
+	QBrush brush(selected ? Qt::green : Qt::white);
+	pen.setColor(selected ? Qt::red : Qt::blue);
+	painter->setPen(pen);
+	painter->setBrush(brush);
+
+    // Рисуем границу элемента
+	painter->drawRect(boundingRect());
+
+	int16_t current = props->getProperty(5)->data.toInt();
+	if ((current >= 0) && (current < iconset.size()))
+	{
+        // Рисование выбранной иконки внутри прямоугольника элемента
+		painter->setPen(Qt::SolidLine);
+		painter->setPen(Qt::black);
+		painter->drawImage(boundingRect(), iconset.at(current));
+	}
+	else
+	{
+        // Рисуем синий крест, если индекс иконки некорректен
+		painter->drawLine(boundingRect().topLeft(), boundingRect().bottomRight());
+		painter->drawLine(boundingRect().topRight(), boundingRect().bottomLeft());
+	}
 }
 
 /**
@@ -76,7 +81,7 @@ void MIconSet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
  */
 void MIconSet::addIcon(QImage icon)
 {
-    iconset.append(icon);
+	iconset.append(icon);
 }
 
 /**
@@ -84,7 +89,7 @@ void MIconSet::addIcon(QImage icon)
  */
 void MIconSet::clearIcons()
 {
-    iconset.clear();
+	iconset.clear();
 }
 
 /**
@@ -93,10 +98,10 @@ void MIconSet::clearIcons()
  */
 void MIconSet::setCurrent(int16_t pos)
 {
-    if (pos < iconset.size())
-    {
-        props->setProperty(5, pos);
-    }
+	if (pos < iconset.size())
+	{
+		props->setProperty(5, pos);
+	}
 }
 
 //
@@ -111,15 +116,15 @@ void MIconSet::setCurrent(int16_t pos)
  */
 MLabel::MLabel(QString label, QRectF position, uint8_t font)
 {
-    type = "labl";
-    props = new MItemProperty(GuiLabel);
+	type = "labl";
+	props = new MItemProperty(GuiLabel);
 
-    props->setProperty(0, position.topLeft().x());
-    props->setProperty(1, position.topLeft().y());
-    props->setProperty(2, position.width());
-    props->setProperty(3, position.height());
-    props->setProperty(4, label);
-    props->setProperty(5, font);
+	props->setProperty(0, position.topLeft().x());
+	props->setProperty(1, position.topLeft().y());
+	props->setProperty(2, position.width());
+	props->setProperty(3, position.height());
+	props->setProperty(4, label);
+	props->setProperty(5, font);
 }
 
 /**
@@ -128,12 +133,12 @@ MLabel::MLabel(QString label, QRectF position, uint8_t font)
  */
 QRectF MLabel::boundingRect() const
 {
-    return QRectF(
-        QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-        PC_SCALE * props->getProperty(1)->data.toInt()),
-        QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-        PC_SCALE * props->getProperty(3)->data.toInt())
-                );
+	return QRectF(
+		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
+		PC_SCALE * props->getProperty(1)->data.toInt()),
+		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
+		PC_SCALE * props->getProperty(3)->data.toInt())
+				);
 }
 
 /**
@@ -144,27 +149,30 @@ QRectF MLabel::boundingRect() const
  */
 void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(widget);
-    Q_UNUSED(option);
+	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
-    // Рисуем синий прямоугольник
-    QPen pen(Qt::DashLine);
-    QBrush brush(selected ? Qt::green : Qt::white);
-    pen.setColor(Qt::blue);
-    painter->setPen(pen);
-    painter->setBrush(brush);
+    // Цвет обводки по умолчанию синий
+    // Цвет фона по умолчанию белый, при выделении - зеленый
+	QPen pen(Qt::DashLine);
+	QBrush brush(selected ? Qt::green : Qt::white);
+	pen.setColor(Qt::blue);
+	painter->setPen(pen);
+	painter->setBrush(brush);
+
+    // Рисуем границу элемента
     painter->drawRect(boundingRect());
 
-    switch (props->getProperty(5)->data.toInt())
-    {
-        case 0:
-            painter->setFont(QFont("Courier New", 30));
-        break;
-    }
+	switch (props->getProperty(5)->data.toInt())
+	{
+		case 0:
+			painter->setFont(QFont("Courier New", 30));
+		break;
+	}
 
-    painter->setPen(Qt::black);
-    //painter->drawText(position.topLeft(), str);
-    painter->drawStaticText(boundingRect().topLeft(), QStaticText(props->getProperty(4)->data.toString()));
+    // Рисуем текст, цвет текста черный
+	painter->setPen(Qt::black);
+	painter->drawStaticText(boundingRect().topLeft(), QStaticText(props->getProperty(4)->data.toString()));
 }
 
 //
@@ -178,18 +186,18 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
  */
 MProgress::MProgress(QString label, QRectF position)
 {
-    type = "prgs";
-    props = new MItemProperty(GuiProgress);
+	type = "prgs";
+	props = new MItemProperty(GuiProgress);
 
-    props->setProperty(0, position.topLeft().x());
-    props->setProperty(1, position.topLeft().y());
-    props->setProperty(2, position.width());
-    props->setProperty(3, position.height());
-    props->setProperty(4, 0);       // value
-    props->setProperty(5, 0);       // min
-    props->setProperty(6, 100);     // max
-    props->setProperty(7, label);   // text
-    // props->setProperty(8, 0);       // font
+	props->setProperty(0, position.topLeft().x());
+	props->setProperty(1, position.topLeft().y());
+	props->setProperty(2, position.width());
+	props->setProperty(3, position.height());
+	props->setProperty(4, 0);	   // value
+	props->setProperty(5, 0);	   // min
+	props->setProperty(6, 100);	 // max
+	props->setProperty(7, label);   // text
+	// props->setProperty(8, 0);	   // font
 }
 
 /**
@@ -201,18 +209,18 @@ MProgress::MProgress(QString label, QRectF position)
  */
 MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
 {
-    type = "prgs";
-    props = new MItemProperty(GuiProgress);
+	type = "prgs";
+	props = new MItemProperty(GuiProgress);
 
-    props->setProperty(0, position.topLeft().x());
-    props->setProperty(1, position.topLeft().y());
-    props->setProperty(2, position.width());
-    props->setProperty(3, position.height());
-    props->setProperty(4, min);     // value
-    props->setProperty(5, min);     // min
-    props->setProperty(6, max);     // max
-    props->setProperty(7, label);   // text
-    props->setProperty(8, 0);       // font
+	props->setProperty(0, position.topLeft().x());
+	props->setProperty(1, position.topLeft().y());
+	props->setProperty(2, position.width());
+	props->setProperty(3, position.height());
+	props->setProperty(4, min);	 // value
+	props->setProperty(5, min);	 // min
+	props->setProperty(6, max);	 // max
+	props->setProperty(7, label);   // text
+	props->setProperty(8, 0);	   // font
 }
 
 /**
@@ -221,14 +229,14 @@ MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
  */
 void MProgress::setValue(int16_t val)
 {
-    if ((val >= min) && (val <= max))
-        props->setProperty(4, val);
+	if ((val >= min) && (val <= max))
+		props->setProperty(4, val);
 }
 
 //void MProgress::setRange(int16_t min, int16_t max)
 //{
-//    this->min = min;
-//    this->max = max;
+//	this->min = min;
+//	this->max = max;
 //}
 
 /**
@@ -237,12 +245,12 @@ void MProgress::setValue(int16_t val)
  */
 QRectF MProgress::boundingRect() const
 {
-    return QRectF(
-        QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-        PC_SCALE * props->getProperty(1)->data.toInt()),
-        QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-        PC_SCALE * props->getProperty(3)->data.toInt())
-                );
+	return QRectF(
+		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
+		PC_SCALE * props->getProperty(1)->data.toInt()),
+		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
+		PC_SCALE * props->getProperty(3)->data.toInt())
+				);
 }
 
 /**
@@ -253,23 +261,23 @@ QRectF MProgress::boundingRect() const
  */
 void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(widget);
-    Q_UNUSED(option);
+	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
-    // Рисуем рамку
-    QPen pen;
-    pen.setWidth(4);
-    painter->setPen(pen);
-    painter->drawRect(boundingRect().x() + 2, boundingRect().y() + 2, boundingRect().width() - 5, boundingRect().height() - 4);
+	// Рисуем рамку
+	QPen pen;
+	pen.setWidth(4);
+	painter->setPen(pen);
+	painter->drawRect(boundingRect().x() + 2, boundingRect().y() + 2, boundingRect().width() - 5, boundingRect().height() - 4);
 
-    // Рисуем заполнение
-    painter->setBrush(QBrush(Qt::black));
-    pen.setWidth(0);
-    pen.setColor(Qt::black);
-    painter->setPen(pen);
+	// Рисуем заполнение
+	painter->setBrush(QBrush(Qt::black));
+	pen.setWidth(0);
+	pen.setColor(Qt::black);
+	painter->setPen(pen);
 
-    float realWidth = ((float)props->getProperty(4)->data.toInt() - (float)props->getProperty(5)->data.toInt()) / ((float)props->getProperty(6)->data.toInt() - (float)props->getProperty(5)->data.toInt()) * (boundingRect().width() - 9);
-    painter->drawRect(boundingRect().x() + 4, boundingRect().y() + 4, realWidth, boundingRect().height() - 9);
+	float realWidth = ((float)props->getProperty(4)->data.toInt() - (float)props->getProperty(5)->data.toInt()) / ((float)props->getProperty(6)->data.toInt() - (float)props->getProperty(5)->data.toInt()) * (boundingRect().width() - 9);
+	painter->drawRect(boundingRect().x() + 4, boundingRect().y() + 4, realWidth, boundingRect().height() - 9);
 }
 
 //
@@ -282,16 +290,16 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
  */
 MMenu::MMenu(QRectF position)
 {
-    type = "menu";
-    props = new MItemProperty(GuiMenu);
+	type = "menu";
+	props = new MItemProperty(GuiMenu);
 
-    props->setProperty(0, position.topLeft().x());
-    props->setProperty(1, position.topLeft().y());
-    props->setProperty(2, position.width());
-    props->setProperty(3, position.height());
-    props->setProperty(5, -1);  // StartPos
-    props->setProperty(6, -1);  // CurPos
-    //props->setProperty(7, 0);   // Font
+	props->setProperty(0, position.topLeft().x());
+	props->setProperty(1, position.topLeft().y());
+	props->setProperty(2, position.width());
+	props->setProperty(3, position.height());
+	props->setProperty(5, -1);  // StartPos
+	props->setProperty(6, -1);  // CurPos
+	//props->setProperty(7, 0);   // Font
 }
 
 /**
@@ -300,12 +308,12 @@ MMenu::MMenu(QRectF position)
  */
 QRectF MMenu::boundingRect() const
 {
-    return QRectF(
-        QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-        PC_SCALE * props->getProperty(1)->data.toInt()),
-        QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-        PC_SCALE * props->getProperty(3)->data.toInt())
-                );
+	return QRectF(
+		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
+		PC_SCALE * props->getProperty(1)->data.toInt()),
+		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
+		PC_SCALE * props->getProperty(3)->data.toInt())
+				);
 }
 
 /**
@@ -316,39 +324,50 @@ QRectF MMenu::boundingRect() const
  */
 void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    // Рисуем синий прямоугольник
-    QPen pen(Qt::DashLine);
-    pen.setColor(selected ? Qt::red : Qt::blue);
-    painter->setPen(pen);
+    // Цвет обводки по умолчанию синий, при выделении - красный
+	QPen pen(Qt::DashLine);
+	pen.setColor(selected ? Qt::red : Qt::blue);
+	painter->setPen(pen);
+
+    // Рисуем границу элемента
     painter->drawRect(boundingRect());
 
-    switch (props->getProperty(7)->data.toInt())
-    {
-        case 0:
-            painter->setFont(QFont("Courier New", 30));
-        break;
-    }
+	switch (props->getProperty(7)->data.toInt())
+	{
+		case 0:
+			painter->setFont(QFont("Courier New", 30));
+		break;
+	}
 
-    QStringList temp = props->getProperty(4)->data.toStringList();
-    painter->setPen(Qt::black);
-    painter->setBrush(QBrush(Qt::black));
-    for (uint16_t i = 0; i < temp.length(); i++)
-    {
-        // Выделение выбранного пункта меню
-        if (i == props->getProperty(6)->data.toInt())
-        {
-            painter->drawRect(boundingRect().topLeft().x(),
-                          boundingRect().topLeft().y() + 35 * i,
-                          boundingRect().topRight().x() - boundingRect().topLeft().x(),
-                          35
-                        );
+    // Получаем список текстовых строк меню
+	QStringList temp = props->getProperty(4)->data.toStringList();
 
-            painter->setPen(Qt::white);
-        }
+    // По умолчанию шрифт строки черный
+	painter->setPen(Qt::black);
+	painter->setBrush(QBrush(Qt::black));
 
-        painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * i), QStaticText(temp.at(i)));
+    // Перебираем все строки из списка
+	for (uint16_t i = 0; i < temp.length(); i++)
+	{
+        // Если один из пунктов меню - с выделением...
+		if (i == props->getProperty(6)->data.toInt())
+		{
+            // Рисуем черный прямоугольник выделения
+			painter->drawRect(boundingRect().topLeft().x(),
+						  boundingRect().topLeft().y() + 35 * i,
+						  boundingRect().topRight().x() - boundingRect().topLeft().x(),
+						  35
+						);
 
-        if (i == props->getProperty(6)->data.toInt())
-            painter->setPen(Qt::black);
-    }
+            // Белый цвет для текста выделенного элемента
+			painter->setPen(Qt::white);
+		}
+
+        // Рисуем текст
+		painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * i), QStaticText(temp.at(i)));
+
+        // Возвращаем черный цвет для следующей строки
+		if (i == props->getProperty(6)->data.toInt())
+			painter->setPen(Qt::black);
+	}
 }

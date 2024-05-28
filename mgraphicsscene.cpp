@@ -8,7 +8,7 @@
  */
 void MGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {
-    event->acceptProposedAction();
+	event->acceptProposedAction();
 }
 
 /**
@@ -17,17 +17,17 @@ void MGraphicsScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
  */
 void MGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
-    const QMimeData *mimeData = event->mimeData();
+	const QMimeData *mimeData = event->mimeData();
 
-    if (mimeData->hasText())
-    {
-        QString a = mimeData->text();
-        GuiType b = (GuiType)a.toInt();
+	if (mimeData->hasText())
+	{
+		QString a = mimeData->text();
+		GuiType b = (GuiType)a.toInt();
 
-        emit newItem(b);
-    }
+		emit newItem(b);
+	}
 
-    event->acceptProposedAction();
+	event->acceptProposedAction();
 }
 
 /**
@@ -35,5 +35,5 @@ void MGraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
  */
 void MGraphicsScene::updateScene()
 {
-    update();
+	update();
 }

@@ -14,24 +14,24 @@
  */
 class MListEditor : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit MListEditor(QStringList data, bool isFiles, QWidget *parent = nullptr);
-    ~MListEditor();
+	explicit MListEditor(QStringList data, bool isFiles, QWidget *parent = nullptr);
+	~MListEditor();
 
 protected:
-    bool isFiles;
-    QLineEdit *edit;
-    QListWidget *list;
-    void FillList(QStringList items);
+	bool isFiles;
+	QLineEdit *edit;
+	QListWidget *list;
+	void FillList(QStringList items);
 
 signals:
-    void dialogResult(const QStringList &data);
+	void dialogResult(const QStringList &data);
 
 protected slots:
-    void btnOkPressed();
-    void btnAddPressed();
-    void btnDelPressed();
+	void btnOkPressed();
+	void btnAddPressed();
+	void btnDelPressed();
 };
 
 #endif // MLISTEDITOR_H

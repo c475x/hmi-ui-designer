@@ -10,10 +10,10 @@
  */
 MListWidget::MListWidget(QWidget *parent) : QListWidget(parent)
 {
-    setDragEnabled(true);
-    setAcceptDrops(true);
-    setDropIndicatorShown(true);
-    setDragDropMode(DragOnly);
+	setDragEnabled(true);
+	setAcceptDrops(true);
+	setDropIndicatorShown(true);
+	setDragDropMode(DragOnly);
 }
 
 /**
@@ -22,17 +22,17 @@ MListWidget::MListWidget(QWidget *parent) : QListWidget(parent)
  */
 void MListWidget::startDrag(Qt::DropActions acts)
 {
-    QListWidgetItem *item = currentItem();
+	QListWidgetItem *item = currentItem();
 
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+	QByteArray itemData;
+	QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-    int32_t type = item->type();
+	int32_t type = item->type();
 
-    QMimeData *mimeData = new QMimeData;
-    mimeData->setText(QString::number(type));
+	QMimeData *mimeData = new QMimeData;
+	mimeData->setText(QString::number(type));
 
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData);
-    drag->exec(Qt::CopyAction);
+	QDrag *drag = new QDrag(this);
+	drag->setMimeData(mimeData);
+	drag->exec(Qt::CopyAction);
 }
