@@ -13,6 +13,7 @@ MItemProperty::MItemProperty(GuiType guiType)
 	items.append(new PropItem("Y", PropNumber, 0));
 	items.append(new PropItem("Width", PropNumber, 0));
 	items.append(new PropItem("Height", PropNumber, 0));
+
 	switch (guiType)
 	{
 		case GuiIconSet:
@@ -25,10 +26,9 @@ MItemProperty::MItemProperty(GuiType guiType)
 		break;
 		case GuiMenu:
 			items.append(new PropItem("Items", PropList, QStringList()));
-			items.append(new PropItem("StartPos", PropNumber, -1));
+            items.append(new PropItem("StartPos", PropNumber, 0));
             items.append(new PropItem("CurPos", PropNumber, -1));
 			items.append(new PropItem("Font", PropNumber, 0));
-            items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiProgress:
 			items.append(new PropItem("Value", PropNumber, 0));
@@ -36,6 +36,7 @@ MItemProperty::MItemProperty(GuiType guiType)
 			items.append(new PropItem("Max", PropNumber, 0));
 			items.append(new PropItem("Text", PropString, ""));
 			items.append(new PropItem("Font", PropNumber, 0));
+            items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiCombo:
 		break;

@@ -1,5 +1,6 @@
 #include <QPainter>
 #include <QStaticText>
+#include <QDebug>
 
 #include "mgraph.h"
 
@@ -222,7 +223,7 @@ MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
 	props->setProperty(7, label);   // text
     props->setProperty(8, 0);       // font
     props->setProperty(9, true);    // isvisible
-
+}
 /**
  * @brief MProgress::setValue - задает значение прогрессбара
  * @param val - новое значение прогрессбара
@@ -263,8 +264,6 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
 	Q_UNUSED(widget);
 	Q_UNUSED(option);
-
-    if ()
 
 	// Рисуем рамку
 	QPen pen;
@@ -349,9 +348,34 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	painter->setPen(Qt::black);
 	painter->setBrush(QBrush(Qt::black));
 
+    // Проверка на валидность поля StartPos
+    if (props->getProperty(5)->data.toInt() >= 0)
+    {
+        if (props->getProperty(5)->data.toInt() >= temp.length())
+        {
+            props->setProperty(5, temp.length() - 1);
+        }
+    }
+    else
+    {
+        props->setProperty(5, 0);
+    }
+
     // Заданная пользователем начальная позиция, если указано некорректное значение - приравняется к 0
     int startPos = (props->getProperty(5)->data.toInt() >= 0) &&
                 (props->getProperty(5)->data.toInt() < temp.length()) ? props->getProperty(5)->data.toInt() : 0;
+
+    // Если текущая позиция неактивна (меньше нуля), отобразить как -1
+    if (props->getProperty(6)->data.toInt() < 0)
+    {
+        props->setProperty(6, -1);
+    }
+
+    // Если текущая позиция больше размера списка
+    if (props->getProperty(6)->data.toInt() > temp.length())
+    {
+        props->setProperty(6, temp.length() - 1);
+    }
 
     // Если текущая позиция меньше начальной позиции и не равна -1, приравняем ее к начальной позиции
     if (props->getProperty(6)->data.toInt() < props->getProperty(5)->data.toInt() && props->getProperty(6)->data.toInt() != -1)
@@ -362,8 +386,18 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // Перебираем все строки из списка
     for (uint16_t i = startPos; i < temp.length(); i++)
 	{
-        // Прервать цикл, если строка вылазит за пределы элемента
-        if (35 * (i - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
+        // Если строка вылазит за пределы элемента
+        if (35 * (i + 2 - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
+        {
+            // Если текущая позиция задана, она не должна вылезать за границы меню
+            if (props->getProperty(6)->data.toInt() > i)
+            {
+                props->setProperty(6, i);
+            }
+        }
+
+        // Прерывание цикла отведено отдельно, чтобы изменение текущего элемента успело прорисоваться
+        if (35 * (i + 1 - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
         {
             break;
         }
