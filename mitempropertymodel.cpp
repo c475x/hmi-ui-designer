@@ -26,8 +26,9 @@ MItemProperty::MItemProperty(GuiType guiType)
 		case GuiMenu:
 			items.append(new PropItem("Items", PropList, QStringList()));
 			items.append(new PropItem("StartPos", PropNumber, -1));
-			items.append(new PropItem("CurPos", PropNumber, -1));
+            items.append(new PropItem("CurPos", PropNumber, -1));
 			items.append(new PropItem("Font", PropNumber, 0));
+            items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiProgress:
 			items.append(new PropItem("Value", PropNumber, 0));

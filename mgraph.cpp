@@ -53,7 +53,7 @@ void MIconSet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	QPen pen(Qt::DashLine);
 	QBrush brush(selected ? Qt::green : Qt::white);
 	pen.setColor(selected ? Qt::red : Qt::blue);
-	painter->setPen(pen);
+    painter->setPen(pen);
 	painter->setBrush(brush);
 
     // Рисуем границу элемента
@@ -216,12 +216,12 @@ MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
 	props->setProperty(1, position.topLeft().y());
 	props->setProperty(2, position.width());
 	props->setProperty(3, position.height());
-	props->setProperty(4, min);	 // value
-	props->setProperty(5, min);	 // min
-	props->setProperty(6, max);	 // max
+    props->setProperty(4, min);     // value
+    props->setProperty(5, min);     // min
+    props->setProperty(6, max);     // max
 	props->setProperty(7, label);   // text
-	props->setProperty(8, 0);	   // font
-}
+    props->setProperty(8, 0);       // font
+    props->setProperty(9, true);    // isvisible
 
 /**
  * @brief MProgress::setValue - задает значение прогрессбара
@@ -263,6 +263,8 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
 	Q_UNUSED(widget);
 	Q_UNUSED(option);
+
+    if ()
 
 	// Рисуем рамку
 	QPen pen;
@@ -332,6 +334,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     // Рисуем границу элемента
     painter->drawRect(boundingRect());
 
+    // Установка выбранного шрифта
 	switch (props->getProperty(7)->data.toInt())
 	{
 		case 0:
@@ -346,15 +349,31 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	painter->setPen(Qt::black);
 	painter->setBrush(QBrush(Qt::black));
 
+    // Заданная пользователем начальная позиция, если указано некорректное значение - приравняется к 0
+    int startPos = (props->getProperty(5)->data.toInt() >= 0) &&
+                (props->getProperty(5)->data.toInt() < temp.length()) ? props->getProperty(5)->data.toInt() : 0;
+
+    // Если текущая позиция меньше начальной позиции и не равна -1, приравняем ее к начальной позиции
+    if (props->getProperty(6)->data.toInt() < props->getProperty(5)->data.toInt() && props->getProperty(6)->data.toInt() != -1)
+    {
+        props->setProperty(6, startPos);
+    }
+
     // Перебираем все строки из списка
-	for (uint16_t i = 0; i < temp.length(); i++)
+    for (uint16_t i = startPos; i < temp.length(); i++)
 	{
+        // Прервать цикл, если строка вылазит за пределы элемента
+        if (35 * (i - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
+        {
+            break;
+        }
+
         // Если один из пунктов меню - с выделением...
 		if (i == props->getProperty(6)->data.toInt())
 		{
             // Рисуем черный прямоугольник выделения
 			painter->drawRect(boundingRect().topLeft().x(),
-						  boundingRect().topLeft().y() + 35 * i,
+                          boundingRect().topLeft().y() + 35 * (i - startPos),
 						  boundingRect().topRight().x() - boundingRect().topLeft().x(),
 						  35
 						);
@@ -364,7 +383,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 		}
 
         // Рисуем текст
-		painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * i), QStaticText(temp.at(i)));
+        painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * (i - startPos)), QStaticText(temp.at(i)));
 
         // Возвращаем черный цвет для следующей строки
 		if (i == props->getProperty(6)->data.toInt())

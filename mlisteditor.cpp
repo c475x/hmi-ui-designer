@@ -74,11 +74,16 @@ void MListEditor::btnAddPressed()
 	if (isFiles)
 	{
 		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы", "D:/git/hmi-prepare-gui/resources/icons");
-		FillList(fnames);
+        FillList(fnames);
 	}
 	else
 	{
-		list->addItem(edit->text());
+        // Проверяем, не пустая ли строка
+        if (edit->text().length() > 0)
+        {
+            list->addItem(edit->text());
+        }
+
 		edit->clear();
 	}
 }
