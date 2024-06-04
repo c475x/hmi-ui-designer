@@ -2,6 +2,8 @@
 
 #include "mitempropertymodel.h"
 
+#include <QDebug>
+
 //
 // ----------------------------------- MItemProperty -----------------------------------
 //

@@ -1,6 +1,7 @@
 #include <QPainter>
 #include <QStaticText>
 #include <QDebug>
+#include <QtMath>
 
 #include "mgraph.h"
 
@@ -298,7 +299,7 @@ MMenu::MMenu(QRectF position)
 	props->setProperty(1, position.topLeft().y());
 	props->setProperty(2, position.width());
 	props->setProperty(3, position.height());
-	props->setProperty(5, -1);  // StartPos
+    props->setProperty(5, 0);  // StartPos
 	props->setProperty(6, -1);  // CurPos
 	//props->setProperty(7, 0);   // Font
 }
@@ -325,6 +326,9 @@ QRectF MMenu::boundingRect() const
  */
 void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
     // Цвет обводки по умолчанию синий, при выделении - красный
 	QPen pen(Qt::DashLine);
 	pen.setColor(selected ? Qt::red : Qt::blue);
@@ -348,23 +352,6 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	painter->setPen(Qt::black);
 	painter->setBrush(QBrush(Qt::black));
 
-    // Проверка на валидность поля StartPos
-    if (props->getProperty(5)->data.toInt() >= 0)
-    {
-        if (props->getProperty(5)->data.toInt() >= temp.length())
-        {
-            props->setProperty(5, temp.length() - 1);
-        }
-    }
-    else
-    {
-        props->setProperty(5, 0);
-    }
-
-    // Заданная пользователем начальная позиция, если указано некорректное значение - приравняется к 0
-    int startPos = (props->getProperty(5)->data.toInt() >= 0) &&
-                (props->getProperty(5)->data.toInt() < temp.length()) ? props->getProperty(5)->data.toInt() : 0;
-
     // Если текущая позиция неактивна (меньше нуля), отобразить как -1
     if (props->getProperty(6)->data.toInt() < 0)
     {
@@ -372,30 +359,35 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     }
 
     // Если текущая позиция больше размера списка
-    if (props->getProperty(6)->data.toInt() > temp.length())
+    if (props->getProperty(6)->data.toInt() >= temp.length())
     {
         props->setProperty(6, temp.length() - 1);
     }
 
-    // Если текущая позиция меньше начальной позиции и не равна -1, приравняем ее к начальной позиции
-    if (props->getProperty(6)->data.toInt() < props->getProperty(5)->data.toInt() && props->getProperty(6)->data.toInt() != -1)
+    // Если текущая позиция меньше начальной позиции
+    if (props->getProperty(6)->data.toInt() < props->getProperty(5)->data.toInt())
     {
-        props->setProperty(6, startPos);
+        if (props->getProperty(5)->data.toInt() > 0)
+        {
+            props->setProperty(5, qBound(0, props->getProperty(6)->data.toInt() - qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
+        }
     }
+
+    // Если текущая позиция больше начальной позиции + размера блока
+    if (props->getProperty(6)->data.toInt() > props->getProperty(5)->data.toInt() + qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) - 1)
+    {
+        if (props->getProperty(5)->data.toInt() + 1 < temp.length() - 1)
+        {
+            props->setProperty(5, qBound(0, props->getProperty(6)->data.toInt() - qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
+        }
+    }
+
+    // Начальная позиция
+    int startPos = props->getProperty(5)->data.toInt();
 
     // Перебираем все строки из списка
     for (uint16_t i = startPos; i < temp.length(); i++)
 	{
-        // Если строка вылазит за пределы элемента
-        if (35 * (i + 2 - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
-        {
-            // Если текущая позиция задана, она не должна вылезать за границы меню
-            if (props->getProperty(6)->data.toInt() > i)
-            {
-                props->setProperty(6, i);
-            }
-        }
-
         // Прерывание цикла отведено отдельно, чтобы изменение текущего элемента успело прорисоваться
         if (35 * (i + 1 - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
         {
