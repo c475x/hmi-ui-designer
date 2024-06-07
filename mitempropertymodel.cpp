@@ -2,8 +2,6 @@
 
 #include "mitempropertymodel.h"
 
-#include <QDebug>
-
 //
 // ----------------------------------- MItemProperty -----------------------------------
 //
@@ -146,6 +144,12 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
+bool validate(const QString &value)
+{
+
+    return true;
+}
+
 /**
  * @brief MItemPropertyModel::setData - функция вызывается по окончании редактирования ячейки
  * @param index - позиция ячейки
@@ -155,21 +159,41 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
  */
 bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	Q_UNUSED(role)
-	if (pCurPropList)
-	{
-		PropItem *pItem = pCurPropList->getProperty(index.row());
-		if (pItem)
-		{
-			beginResetModel();
-			pItem->data = value;
-			endResetModel();
-			emit updateScene();
-			return true;
-		}
-	}
+    Q_UNUSED(role)
 
-	return false;
+    if (pCurPropList)
+    {
+        PropItem *pItem = pCurPropList->getProperty(index.row());
+
+        // Если в числовое поле была введена строка
+        if (pItem->type == PropNumber)
+        {
+            bool ok;
+            int val = value.toInt(&ok);
+
+            if (!ok)
+            {
+                return false;
+            }
+        }
+
+        // При изменении полей-списков сам список изменяться не должен
+        if (pItem->type == PropList || pItem->type == PropFiles)
+        {
+            return false;
+        }
+
+        if (pItem)
+        {
+            beginResetModel();
+            pItem->data = value;
+            endResetModel();
+            emit updateScene();
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -179,8 +203,8 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
  */
 Qt::ItemFlags MItemPropertyModel::flags(const QModelIndex &index) const
 {
-	if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
-		return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
+        return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }

@@ -41,9 +41,10 @@ protected:
 class MItemPropertyModel : public QAbstractTableModel
 {
 	Q_OBJECT
+
 public:
-	MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) {pCurPropList = NULL;}
-	~MItemPropertyModel() { }
+    MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) { pCurPropList = NULL; }
+    ~MItemPropertyModel() { }
 	//void setGuiType(GuiType gui_type);
 	//void setGuiType(QString str);
 	void setPropCur(int32_t index, QVariant value);

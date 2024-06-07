@@ -33,6 +33,16 @@ protected:
 class MIconSet : public MBase
 {
 public:
+    typedef enum
+    {
+        PROP_X,
+        PROP_Y,
+        PROP_WIDTH,
+        PROP_HEIGHT,
+        PROP_ICONS,
+        PROP_CURINDEX
+    } ItemProperty;
+
 	MIconSet() : MIconSet(QPointF(0, 0), QSizeF(0, 0)) { }
 	MIconSet(QPointF origin, QSizeF size);
 	QRectF boundingRect() const override;
@@ -51,15 +61,42 @@ protected:
 class MLabel : public MBase
 {
 public:
+    typedef enum
+    {
+        PROP_X,
+        PROP_Y,
+        PROP_WIDTH,
+        PROP_HEIGHT,
+        PROP_TEXT,
+        PROP_FONT
+    } ItemProperty;
+
 	MLabel() : MLabel("", QRectF(0, 0, 0, 0)) { }
 	MLabel(QString label, QRectF position, uint8_t font = 0);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
+/**
+ * @brief MProgress - класс элемента "Прогресс-бар"
+ */
 class MProgress : public MBase
 {
 public:
+    typedef enum
+    {
+        PROP_X,
+        PROP_Y,
+        PROP_WIDTH,
+        PROP_HEIGHT,
+        PROP_VALUE,
+        PROP_MINVAL,
+        PROP_MAXVAL,
+        PROP_TEXT,
+        PROP_FONT,
+        PROP_ISVISIBLE
+    } ItemProperty;
+
 	MProgress() : MProgress("", QRectF(0, 0, 0, 0)) { }
 	MProgress(QString label, QRectF position);
 	MProgress(QString label, QRectF position, int16_t min, int16_t max);
@@ -81,12 +118,23 @@ protected:
 class MMenu : public MBase
 {
 public:
-	//MMenu(QRectF position) {this->position = position; font = 0; type = "menu";}
-	MMenu(QRectF position);// {this->position = position; font = 0; type = "menu";}
-	//void addMenuItem(QString str) {items.append(str);}
-	//void addMenuItem(QString str);
-	QRectF boundingRect() const override;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    typedef enum
+    {
+        PROP_X,
+        PROP_Y,
+        PROP_WIDTH,
+        PROP_HEIGHT,
+        PROP_ITEMS,
+        PROP_STARTPOS,
+        PROP_CURPOS,
+        PROP_FONT
+    } ItemProperty;
+
+    // MMenu(QRectF position) {this->position = position; font = 0; type = "menu";}
+    MMenu(QRectF position);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget) override;
 
 protected:
 	//QVector<QString> items;

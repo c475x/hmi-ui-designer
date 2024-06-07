@@ -19,10 +19,10 @@ MIconSet::MIconSet(QPointF origin, QSizeF size)
 	type = "icon";
 	props = new MItemProperty(GuiIconSet);
 
-	props->setProperty(0, origin.x());
-	props->setProperty(1, origin.y());
-	props->setProperty(2, size.width());
-	props->setProperty(3, size.height());
+    props->setProperty(PROP_X, origin.x());
+    props->setProperty(PROP_Y, origin.y());
+    props->setProperty(PROP_WIDTH, size.width());
+    props->setProperty(PROP_HEIGHT, size.height());
 }
 
 /**
@@ -32,10 +32,10 @@ MIconSet::MIconSet(QPointF origin, QSizeF size)
 QRectF MIconSet::boundingRect() const
 {
 	return QRectF(
-		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-		PC_SCALE * props->getProperty(1)->data.toInt()),
-		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-		PC_SCALE * props->getProperty(3)->data.toInt())
+        QPointF(PC_SCALE * props->getProperty(PROP_X)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_Y)->data.toInt()),
+        QSizeF(PC_SCALE * props->getProperty(PROP_WIDTH)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_HEIGHT)->data.toInt())
 				);
 }
 
@@ -61,7 +61,7 @@ void MIconSet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     // Рисуем границу элемента
 	painter->drawRect(boundingRect());
 
-	int16_t current = props->getProperty(5)->data.toInt();
+    int16_t current = props->getProperty(PROP_CURINDEX)->data.toInt();
 	if ((current >= 0) && (current < iconset.size()))
 	{
         // Рисование выбранной иконки внутри прямоугольника элемента
@@ -102,7 +102,7 @@ void MIconSet::setCurrent(int16_t pos)
 {
 	if (pos < iconset.size())
 	{
-		props->setProperty(5, pos);
+        props->setProperty(PROP_CURINDEX, pos);
 	}
 }
 
@@ -121,12 +121,12 @@ MLabel::MLabel(QString label, QRectF position, uint8_t font)
 	type = "labl";
 	props = new MItemProperty(GuiLabel);
 
-	props->setProperty(0, position.topLeft().x());
-	props->setProperty(1, position.topLeft().y());
-	props->setProperty(2, position.width());
-	props->setProperty(3, position.height());
-	props->setProperty(4, label);
-	props->setProperty(5, font);
+    props->setProperty(PROP_X, position.topLeft().x());
+    props->setProperty(PROP_Y, position.topLeft().y());
+    props->setProperty(PROP_WIDTH, position.width());
+    props->setProperty(PROP_HEIGHT, position.height());
+    props->setProperty(PROP_TEXT, label);
+    props->setProperty(PROP_FONT, font);
 }
 
 /**
@@ -136,10 +136,10 @@ MLabel::MLabel(QString label, QRectF position, uint8_t font)
 QRectF MLabel::boundingRect() const
 {
 	return QRectF(
-		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-		PC_SCALE * props->getProperty(1)->data.toInt()),
-		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-		PC_SCALE * props->getProperty(3)->data.toInt())
+        QPointF(PC_SCALE * props->getProperty(PROP_X)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_Y)->data.toInt()),
+        QSizeF(PC_SCALE * props->getProperty(PROP_WIDTH)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_HEIGHT)->data.toInt())
 				);
 }
 
@@ -165,7 +165,7 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     // Рисуем границу элемента
     painter->drawRect(boundingRect());
 
-	switch (props->getProperty(5)->data.toInt())
+    switch (props->getProperty(PROP_FONT)->data.toInt())
 	{
 		case 0:
 			painter->setFont(QFont("Courier New", 30));
@@ -174,7 +174,7 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     // Рисуем текст, цвет текста черный
 	painter->setPen(Qt::black);
-	painter->drawStaticText(boundingRect().topLeft(), QStaticText(props->getProperty(4)->data.toString()));
+    painter->drawStaticText(boundingRect().topLeft(), QStaticText(props->getProperty(PROP_TEXT)->data.toString()));
 }
 
 //
@@ -191,15 +191,15 @@ MProgress::MProgress(QString label, QRectF position)
 	type = "prgs";
 	props = new MItemProperty(GuiProgress);
 
-	props->setProperty(0, position.topLeft().x());
-	props->setProperty(1, position.topLeft().y());
-	props->setProperty(2, position.width());
-	props->setProperty(3, position.height());
-	props->setProperty(4, 0);	   // value
-	props->setProperty(5, 0);	   // min
-	props->setProperty(6, 100);	 // max
-	props->setProperty(7, label);   // text
-	// props->setProperty(8, 0);	   // font
+    props->setProperty(PROP_X, position.topLeft().x());
+    props->setProperty(PROP_Y, position.topLeft().y());
+    props->setProperty(PROP_WIDTH, position.width());
+    props->setProperty(PROP_HEIGHT, position.height());
+    props->setProperty(PROP_VALUE, 0);
+    props->setProperty(PROP_MINVAL, 0);
+    props->setProperty(PROP_MAXVAL, 100);
+    props->setProperty(PROP_TEXT, label);
+    // props->setProperty(PROP_FONT, 0);
 }
 
 /**
@@ -214,16 +214,16 @@ MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
 	type = "prgs";
 	props = new MItemProperty(GuiProgress);
 
-	props->setProperty(0, position.topLeft().x());
-	props->setProperty(1, position.topLeft().y());
-	props->setProperty(2, position.width());
-	props->setProperty(3, position.height());
-    props->setProperty(4, min);     // value
-    props->setProperty(5, min);     // min
-    props->setProperty(6, max);     // max
-	props->setProperty(7, label);   // text
-    props->setProperty(8, 0);       // font
-    props->setProperty(9, true);    // isvisible
+    props->setProperty(PROP_X, position.topLeft().x());
+    props->setProperty(PROP_Y, position.topLeft().y());
+    props->setProperty(PROP_WIDTH, position.width());
+    props->setProperty(PROP_HEIGHT, position.height());
+    props->setProperty(PROP_VALUE, min);
+    props->setProperty(PROP_MINVAL, min);
+    props->setProperty(PROP_MAXVAL, max);
+    props->setProperty(PROP_TEXT, label);
+    props->setProperty(PROP_FONT, 0);
+    props->setProperty(PROP_ISVISIBLE, true);
 }
 /**
  * @brief MProgress::setValue - задает значение прогрессбара
@@ -232,7 +232,7 @@ MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
 void MProgress::setValue(int16_t val)
 {
 	if ((val >= min) && (val <= max))
-		props->setProperty(4, val);
+        props->setProperty(PROP_VALUE, val);
 }
 
 //void MProgress::setRange(int16_t min, int16_t max)
@@ -248,10 +248,10 @@ void MProgress::setValue(int16_t val)
 QRectF MProgress::boundingRect() const
 {
 	return QRectF(
-		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-		PC_SCALE * props->getProperty(1)->data.toInt()),
-		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-		PC_SCALE * props->getProperty(3)->data.toInt())
+        QPointF(PC_SCALE * props->getProperty(PROP_X)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_Y)->data.toInt()),
+        QSizeF(PC_SCALE * props->getProperty(PROP_WIDTH)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_HEIGHT)->data.toInt())
 				);
 }
 
@@ -278,7 +278,7 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	pen.setColor(Qt::black);
 	painter->setPen(pen);
 
-	float realWidth = ((float)props->getProperty(4)->data.toInt() - (float)props->getProperty(5)->data.toInt()) / ((float)props->getProperty(6)->data.toInt() - (float)props->getProperty(5)->data.toInt()) * (boundingRect().width() - 9);
+    float realWidth = ((float)props->getProperty(PROP_VALUE)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) / ((float)props->getProperty(PROP_MAXVAL)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) * (boundingRect().width() - 9);
 	painter->drawRect(boundingRect().x() + 4, boundingRect().y() + 4, realWidth, boundingRect().height() - 9);
 }
 
@@ -295,13 +295,13 @@ MMenu::MMenu(QRectF position)
 	type = "menu";
 	props = new MItemProperty(GuiMenu);
 
-	props->setProperty(0, position.topLeft().x());
-	props->setProperty(1, position.topLeft().y());
-	props->setProperty(2, position.width());
-	props->setProperty(3, position.height());
-    props->setProperty(5, 0);  // StartPos
-	props->setProperty(6, -1);  // CurPos
-	//props->setProperty(7, 0);   // Font
+    props->setProperty(PROP_X, position.topLeft().x());
+    props->setProperty(PROP_Y, position.topLeft().y());
+    props->setProperty(PROP_WIDTH, position.width());
+    props->setProperty(PROP_HEIGHT, position.height());
+    props->setProperty(PROP_STARTPOS, 0);
+    props->setProperty(PROP_CURPOS, -1);
+    //props->setProperty(PROP_FONT, 0);
 }
 
 /**
@@ -311,10 +311,10 @@ MMenu::MMenu(QRectF position)
 QRectF MMenu::boundingRect() const
 {
 	return QRectF(
-		QPointF(PC_SCALE * props->getProperty(0)->data.toInt(),
-		PC_SCALE * props->getProperty(1)->data.toInt()),
-		QSizeF(PC_SCALE * props->getProperty(2)->data.toInt(),
-		PC_SCALE * props->getProperty(3)->data.toInt())
+        QPointF(PC_SCALE * props->getProperty(PROP_X)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_Y)->data.toInt()),
+        QSizeF(PC_SCALE * props->getProperty(PROP_WIDTH)->data.toInt(),
+        PC_SCALE * props->getProperty(PROP_HEIGHT)->data.toInt())
 				);
 }
 
@@ -338,7 +338,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     painter->drawRect(boundingRect());
 
     // Установка выбранного шрифта
-	switch (props->getProperty(7)->data.toInt())
+    switch (props->getProperty(PROP_FONT)->data.toInt())
 	{
 		case 0:
 			painter->setFont(QFont("Courier New", 30));
@@ -346,56 +346,56 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	}
 
     // Получаем список текстовых строк меню
-	QStringList temp = props->getProperty(4)->data.toStringList();
+    QStringList temp = props->getProperty(PROP_ITEMS)->data.toStringList();
 
     // По умолчанию шрифт строки черный
 	painter->setPen(Qt::black);
 	painter->setBrush(QBrush(Qt::black));
 
     // Если текущая позиция неактивна (меньше нуля), отобразить как -1
-    if (props->getProperty(6)->data.toInt() < 0)
+    if (props->getProperty(PROP_CURPOS)->data.toInt() < 0)
     {
-        props->setProperty(6, -1);
+        props->setProperty(PROP_CURPOS, -1);
     }
 
     // Если текущая позиция больше размера списка
-    if (props->getProperty(6)->data.toInt() >= temp.length())
+    if (props->getProperty(PROP_CURPOS)->data.toInt() >= temp.length())
     {
-        props->setProperty(6, temp.length() - 1);
+        props->setProperty(PROP_CURPOS, temp.length() - 1);
     }
 
     // Если текущая позиция меньше начальной позиции
-    if (props->getProperty(6)->data.toInt() < props->getProperty(5)->data.toInt())
+    if (props->getProperty(PROP_CURPOS)->data.toInt() < props->getProperty(PROP_STARTPOS)->data.toInt())
     {
-        if (props->getProperty(5)->data.toInt() > 0)
+        if (props->getProperty(PROP_STARTPOS)->data.toInt() > 0)
         {
-            props->setProperty(5, qBound(0, props->getProperty(6)->data.toInt() - qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
+            props->setProperty(PROP_STARTPOS, props->getProperty(PROP_CURPOS)->data.toInt());
         }
     }
 
     // Если текущая позиция больше начальной позиции + размера блока
-    if (props->getProperty(6)->data.toInt() > props->getProperty(5)->data.toInt() + qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) - 1)
+    if (props->getProperty(PROP_CURPOS)->data.toInt() > props->getProperty(PROP_STARTPOS)->data.toInt() + qFloor(props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE / 35) - 1)
     {
-        if (props->getProperty(5)->data.toInt() + 1 < temp.length() - 1)
+        if (props->getProperty(PROP_STARTPOS)->data.toInt() + 1 < temp.length() - 1)
         {
-            props->setProperty(5, qBound(0, props->getProperty(6)->data.toInt() - qFloor(props->getProperty(3)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
+            props->setProperty(PROP_STARTPOS, qBound(0, props->getProperty(PROP_CURPOS)->data.toInt() - qFloor(props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
         }
     }
 
     // Начальная позиция
-    int startPos = props->getProperty(5)->data.toInt();
+    int startPos = props->getProperty(PROP_STARTPOS)->data.toInt();
 
     // Перебираем все строки из списка
     for (uint16_t i = startPos; i < temp.length(); i++)
 	{
         // Прерывание цикла отведено отдельно, чтобы изменение текущего элемента успело прорисоваться
-        if (35 * (i + 1 - startPos) > props->getProperty(3)->data.toInt() * PC_SCALE)
+        if (35 * (i + 1 - startPos) > props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE)
         {
             break;
         }
 
         // Если один из пунктов меню - с выделением...
-		if (i == props->getProperty(6)->data.toInt())
+        if (i == props->getProperty(PROP_CURPOS)->data.toInt())
 		{
             // Рисуем черный прямоугольник выделения
 			painter->drawRect(boundingRect().topLeft().x(),
@@ -412,7 +412,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * (i - startPos)), QStaticText(temp.at(i)));
 
         // Возвращаем черный цвет для следующей строки
-		if (i == props->getProperty(6)->data.toInt())
+        if (i == props->getProperty(PROP_CURPOS)->data.toInt())
 			painter->setPen(Qt::black);
 	}
 }
