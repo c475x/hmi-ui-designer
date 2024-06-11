@@ -22,6 +22,7 @@ SOURCES += \
 	mgraphicsscene.cpp \
 	mguiitemsmodel.cpp \
 	mitempropertymodel.cpp \
+	mitemtypedelegate.cpp \
 	mlisteditor.cpp \
 	mlistwidget.cpp
 
@@ -31,6 +32,7 @@ HEADERS += \
 	mgraphicsscene.h \
 	mguiitemsmodel.h \
 	mitempropertymodel.h \
+	mitemtypedelegate.h \
 	mlisteditor.h \
 	mlistwidget.h \
 	mtypes.h

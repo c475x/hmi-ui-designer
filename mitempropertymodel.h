@@ -30,6 +30,7 @@ public:
 	int32_t getSize() { return items.size(); }
 	PropItem *getProperty(int32_t index);
 	void setProperty(int32_t index, QVariant value);
+	inline GuiType getGuiType() { return guiType; };
 
 protected:
 	GuiType guiType;
@@ -46,17 +47,11 @@ class MItemPropertyModel : public QAbstractTableModel
 public:
 	MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) { pCurPropList = NULL; }
 	~MItemPropertyModel() { }
-	//void setGuiType(GuiType gui_type);
-	//void setGuiType(QString str);
 	void setPropCur(int32_t index, QVariant value);
 	void setProp(GuiType gui, int32_t index, QVariant value);
 	void setList(MItemProperty *list);
 	PropItem *getProp(int32_t index);
-	//QStringList getFullPropList();
 	bool setFileList(int32_t index, QStringList data);
-
-	//static QVector<MItemProperty *> glProperty;
-	//static void initProperties();
 
 protected:
 	MItemProperty *pCurPropList;	// Указатель на отображаемый объект свойств

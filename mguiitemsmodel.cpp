@@ -1,7 +1,9 @@
 #include <qrect.h>
 #include <QLineEdit>
+#include <QSet>
 
 #include "mguiitemsmodel.h"
+#include "mtypes.h"
 
 /**
  * @brief MGuiItemsModel::rowCount - функция возвращает количество строк списка
@@ -30,15 +32,72 @@ QVariant MGuiItemsModel::data(const QModelIndex &index, int role) const
 			y = index.row();
 			if (x < items.length())
 			{
-				return QVariant("[" + QString(items.at(y)->name) + "]");
+				return items.at(y)->name;
 			}
 		break;
 		case Qt::BackgroundRole:
-
+			x = index.column();
+			y = index.row();
+			if (x < items.length())
+			{
+				GuiType type = items.at(y)->props->getGuiType();
+				switch (type)
+				{
+					case GuiIconSet:
+						return "icon";
+					break;
+					case GuiLabel:
+						return "label";
+					break;
+					case GuiMenu:
+						return "menu";
+					break;
+					case GuiProgress:
+						return "progress";
+					break;
+					case GuiCombo:
+						return "combo";
+					break;
+					default:
+						return "";
+					break;
+				}
+			}
 		break;
 	}
 
 	return QVariant();
+}
+
+/**
+ * @brief generateElementName - вспомогательная функция, генерирующая уникальное имя элемента на основе базового имени
+ * @param baseName - базовое имя элемента
+ * @param items - вектор существующих имен
+ * @return - уникальное имя элемента
+ */
+QString generateElementName(QString baseName, const QVector<MBase *> &items)
+{
+	QSet<QString> names;
+	for (MBase *item : items)
+	{
+		names.insert(item->name);
+	}
+
+	// Если имя уникальное, возвращаем его напрямую
+	if (!names.contains(baseName))
+	{
+		return baseName;
+	}
+
+	// Ищем уникальное имя
+	int count = 1;
+	QString newName;
+	do {
+		newName = QString("%1%2").arg(baseName).arg(count);
+		count++;
+	} while (names.contains(newName));
+
+	return newName;
 }
 
 /**
@@ -48,19 +107,20 @@ QVariant MGuiItemsModel::data(const QModelIndex &index, int role) const
 void MGuiItemsModel::addItem(GuiType type)
 {
 	MBase *temp;
+
 	switch (type)
 	{
 		case GuiIconSet:
-			temp = new MIconSet(QPointF(0, 0), QSize(8, 8));
+			temp = new MIconSet(generateElementName("icon", items), QPointF(0, 0), QSize(8, 8));
 		break;
 		case GuiLabel:
-			temp = new MLabel("label", QRectF(QPointF(0, 0), QSizeF(5*6, 8)));
+			temp = new MLabel(generateElementName("label", items), "label", QRectF(QPointF(0, 0), QSizeF(5*6, 8)));
 		break;
 		case GuiProgress:
-			temp = new MProgress("", QRectF(QPointF(0, (64-8)), QSizeF(128, 8)));
+			temp = new MProgress(generateElementName("progress", items), "", QRectF(QPointF(0, (64-8)), QSizeF(128, 8)));
 		break;
 		case GuiMenu:
-			temp = new MMenu(QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
+			temp = new MMenu(generateElementName("menu", items), QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
 		break;
 	}
 
@@ -119,11 +179,31 @@ void MGuiItemsModel::renameItem(int32_t id, QWidget *editor)
 	QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
 	if (lineEdit)
 	{
-		if (id < 0 || id >= items.size() || lineEdit->text().length() == 0)
+		// Меняем название только если элемент существует и новое имя не является пустой строкой
+		if (id < 0 || id >= items.size() || lineEdit->text().isEmpty())
 		{
 			return;
 		}
 
-		items[id]->name = lineEdit->text();
+		items[id]->name = lineEdit->text().left(20);
 	}
+}
+
+#include <QDebug>
+
+/**
+ * @brief MGuiItemsModel::deleteItem - слот, вызывается при нажатии клавиши Del и удаляет выбранный элемент
+ * @param id - номер удаляемого элемента
+ */
+void MGuiItemsModel::deleteItem(int32_t id)
+{
+	if (id < 0 || id >= items.size())
+	{
+		return;
+	}
+
+	beginRemoveRows(QModelIndex(), id, id);
+	delete items[id];
+	items.removeAt(id);
+	endRemoveRows();
 }

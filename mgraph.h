@@ -43,8 +43,8 @@ public:
 		PROP_CURINDEX
 	} ItemProperty;
 
-	MIconSet() : MIconSet(QPointF(0, 0), QSizeF(0, 0)) { }
-	MIconSet(QPointF origin, QSizeF size);
+	MIconSet() : MIconSet("icon", QPointF(0, 0), QSizeF(0, 0)) { }
+	MIconSet(QString name, QPointF origin, QSizeF size);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 	void addIcon(QImage icon);
@@ -71,14 +71,14 @@ public:
 		PROP_FONT
 	} ItemProperty;
 
-	MLabel() : MLabel("", QRectF(0, 0, 0, 0)) { }
-	MLabel(QString label, QRectF position, uint8_t font = 0);
+	MLabel() : MLabel("label", "", QRectF(0, 0, 0, 0)) { }
+	MLabel(QString name, QString label, QRectF position, uint8_t font = 0);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 };
 
 /**
- * @brief MProgress - класс элемента "Прогресс-бар"
+ * @brief MProgress - класс элемента "Прогресс"
  */
 class MProgress : public MBase
 {
@@ -97,10 +97,10 @@ public:
 		PROP_ISVISIBLE
 	} ItemProperty;
 
-	MProgress() : MProgress("", QRectF(0, 0, 0, 0)) { }
-	MProgress(QString label, QRectF position);
-	MProgress(QString label, QRectF position, int16_t min, int16_t max);
-	MProgress(int16_t min, int16_t max);
+	MProgress() : MProgress("progress", "", QRectF(0, 0, 0, 0)) { }
+	MProgress(QString name, QString label, QRectF position);
+	MProgress(QString name, QString label, QRectF position, int16_t min, int16_t max);
+	MProgress(QString name, int16_t min, int16_t max);
 	void setValue(int16_t val);
 	void setRange(int16_t min, int16_t max);
 	QRectF boundingRect() const override;
@@ -130,14 +130,12 @@ public:
 		PROP_FONT
 	} ItemProperty;
 
-	// MMenu(QRectF position) { this->position = position; font = 0; type = "menu"; }
-	MMenu(QRectF position);
+	MMenu(QString name, QRectF position);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			   QWidget *widget) override;
 
 protected:
-	//QVector<QString> items;
 	//uint8_t font;
 };
 

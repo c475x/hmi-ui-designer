@@ -2,6 +2,7 @@
 #include "ui_mainform.h"
 
 #include <QFile>
+#include <QMessageBox>
 #include <QtDebug>
 
 MainForm::MainForm(QWidget *parent)
@@ -20,6 +21,10 @@ MainForm::MainForm(QWidget *parent)
 	scene->resize(ui->screen->width(), ui->screen->height());
 	guiModel = new MGuiItemsModel(scene);
 
+	// Отрисовка типа элемента
+	MItemTypeDelegate *itemDelegate = new MItemTypeDelegate(ui->listGuiItems);
+	ui->listGuiItems->setItemDelegate(itemDelegate);
+
 	// Статусбар для отображения информационных сообщений
 	status = new QLabel(this);
 	ui->statusbar->addWidget(status, 100);
@@ -28,11 +33,14 @@ MainForm::MainForm(QWidget *parent)
 	// Если мышь была нажата на элементе, а отпущена вне - элемент выделялся, но не появлялся редактор его свойств
 	connect(ui->listGuiItems, SIGNAL(pressed(QModelIndex)), this, SLOT(listItemClicked(QModelIndex)));
 
-	// Обработка переименования элемента
+	// Соединяем сигнал-слот переименования элемента при редактировании
 	connect(ui->listGuiItems->itemDelegate(), &QAbstractItemDelegate::commitData, this, [this](QWidget *editor) {
 		QModelIndex index = ui->listGuiItems->currentIndex();
 		guiModel->renameItem(index.row(), editor);
 	});
+
+	// Соединяем сигнал-слот удаления элемента
+	connect(this, &MainForm::deleteItem, guiModel, &MGuiItemsModel::deleteItem);
 
 	propModel = new MItemPropertyModel(this);
 	ui->tableItemProperties->setModel(propModel);
@@ -84,7 +92,7 @@ MainForm::~MainForm()
 }
 
 /**
- * @brief MainForm::eventFilter - функция отслеживает события [нажатий кнопок] мыши по элементам типа QTableView и QListView
+ * @brief MainForm::eventFilter - функция отслеживает события нажатий в элементах типа QTableView и QListView
  * @param obj - элемент, на котором произошло событие
  * @param event - тип события
  * @return - для дефолтной обработки
@@ -100,7 +108,38 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 			if (ev->buttons() & Qt::LeftButton)
 			{
 				int32_t pos = ui->listGuiItems->indexAt(ev->pos()).row();
-					emit selectItem(pos);
+				emit selectItem(pos);
+			}
+		}
+	}
+
+	// Обработка нажатия клавиши в списке объектов
+	if (obj == ui->listGuiItems)
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent *ev = static_cast<QKeyEvent *>(event);
+
+			// Удаление выбранного элемента при нажатии клавиши Delete
+			if (ui->listGuiItems->hasFocus() && !ev->isAutoRepeat() && ev->key() == Qt::Key_Delete)
+			{
+				auto selection = ui->listGuiItems->selectionModel()->selectedIndexes();
+				if (!selection.isEmpty())
+				{
+					// MessageBox для подтверждения удаления
+					QMessageBox::StandardButton reply;
+					reply = QMessageBox::question(this, "Удаление",
+												QString("Удалить %1?").arg(selection.first().data().toString()),
+												QMessageBox::Yes | QMessageBox::No);
+
+					if (reply == QMessageBox::Yes)
+					{
+						// Убираем выделение и посылаем сигнал об удалении элемента
+						propModel->setList(0);
+						ui->listGuiItems->reset();
+						emit deleteItem(selection.first().row());
+					}
+				}
 			}
 		}
 	}
@@ -209,7 +248,7 @@ void MainForm::listItemClicked(QModelIndex index)
 	MBase *pItem = guiModel->getItem(index.row());
 	if (pItem)
 	{
-		showStatus(QString("clicked on %1").arg(pItem->name));
+		// showStatus(QString("clicked on %1").arg(pItem->name));
 		propModel->setList(pItem->props);
 	}
 }

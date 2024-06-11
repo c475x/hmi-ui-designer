@@ -13,9 +13,9 @@
  * @param origin - позиция элемента
  * @param size - размер элемента
  */
-MIconSet::MIconSet(QPointF origin, QSizeF size)
+MIconSet::MIconSet(QString name, QPointF origin, QSizeF size)
 {
-	name = "icon";
+	this->name = name;
 	props = new MItemProperty(GuiIconSet);
 
 	props->setProperty(PROP_X, origin.x());
@@ -115,9 +115,9 @@ void MIconSet::setCurrent(int16_t pos)
  * @param position - позиция элемента
  * @param font - шрифт
  */
-MLabel::MLabel(QString label, QRectF position, uint8_t font)
+MLabel::MLabel(QString name, QString label, QRectF position, uint8_t font)
 {
-	name = "labl";
+	this->name = name;
 	props = new MItemProperty(GuiLabel);
 
 	props->setProperty(PROP_X, position.topLeft().x());
@@ -185,9 +185,9 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
  * @param label - текст элемента
  * @param position - позиция элемента
  */
-MProgress::MProgress(QString label, QRectF position)
+MProgress::MProgress(QString name, QString label, QRectF position)
 {
-	name = "prgs";
+	this->name = name;
 	props = new MItemProperty(GuiProgress);
 
 	props->setProperty(PROP_X, position.topLeft().x());
@@ -208,9 +208,9 @@ MProgress::MProgress(QString label, QRectF position)
  * @param min - минимальное значение
  * @param max - максимальное значение
  */
-MProgress::MProgress(QString label, QRectF position, int16_t min, int16_t max)
+MProgress::MProgress(QString name, QString label, QRectF position, int16_t min, int16_t max)
 {
-	name = "prgs";
+	this->name = name;
 	props = new MItemProperty(GuiProgress);
 
 	props->setProperty(PROP_X, position.topLeft().x());
@@ -291,9 +291,9 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
  * @brief MMenu::MMenu - создает объект класса MProgress
  * @param val - новое значение прогрессбара
  */
-MMenu::MMenu(QRectF position)
+MMenu::MMenu(QString name, QRectF position)
 {
-	name = "menu";
+	this->name = name;
 	props = new MItemProperty(GuiMenu);
 
 	props->setProperty(PROP_X, position.topLeft().x());

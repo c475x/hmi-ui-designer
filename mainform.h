@@ -13,6 +13,7 @@
 #include "mlistwidget.h"
 #include "mitempropertymodel.h"
 #include "mlisteditor.h"
+#include "mitemtypedelegate.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainForm; }
@@ -56,6 +57,7 @@ public slots:
 
 signals:
 	void selectItem(int32_t id);
+	void deleteItem(int32_t id);
 	//void selectProp(int32_t id);
 };
 #endif // MAINFORM_H

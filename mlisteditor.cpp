@@ -1,5 +1,6 @@
 #include <QFileDialog>
 #include <QDir>
+
 #include "mlisteditor.h"
 
 /**
@@ -21,6 +22,7 @@ MListEditor::MListEditor(QStringList data, bool isFiles, QWidget *parent) : QDia
 	QPushButton *btnOk = new QPushButton("OK", this);
 	QPushButton *btnDel = new QPushButton("-", this);
 	QPushButton *btnAdd = new QPushButton("+", this);
+
 	if (!isFiles)
 	{
 		edit = new QLineEdit(this);
@@ -77,7 +79,7 @@ void MListEditor::btnAddPressed()
 {
 	if (isFiles)
 	{
-		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы", "D:/git/hmi-prepare-gui/resources/icons");
+		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы", "resources/icons");
 		FillList(fnames);
 	}
 	else

@@ -104,8 +104,11 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 			case Qt::DisplayRole:
 				if (pItem != NULL)
 				{
-					if (index.column() == 0) // Если первая колонка, то выводим имя параметра
+					// Если первая колонка, то выводим имя параметра
+					if (index.column() == 0)
+					{
 						return QVariant(pItem->name);
+					}
 					else
 					{
 						switch (pItem->type) // Смотрим, какого типа поле свойства
@@ -124,14 +127,6 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 							{
 								QStringList temp = pItem->data.toStringList();
 								QString info = QString("[%1]").arg(temp.size());
-								//return QVariant(QString("[%1]").arg(temp.size()));
-								//auto cellData = this->data(index, role);
-								//auto item = this->index(index.row(), index.column());
-								//QPushButton *cartButton = new QPushButton("+");
-								//ui->table_view->setIndexWidget(item, cartButton);
-								//tableView->setIndexWidget(model->index(position,COLUMN_NUMBER), helpButton);
-								//emit setWidget(QPoint(index.row(), index.column()), cartButton);
-								//emit setWidget(QPoint(), NULL);
 								return QVariant(info);
 							}
 							break;
@@ -207,8 +202,11 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
  */
 Qt::ItemFlags MItemPropertyModel::flags(const QModelIndex &index) const
 {
-	if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
+	// Если выбрана вторая колонка, то можно редактировать
+	if (index.column() > 0)
+	{
 		return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	}
 
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
