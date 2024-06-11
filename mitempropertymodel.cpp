@@ -26,8 +26,8 @@ MItemProperty::MItemProperty(GuiType guiType)
 		break;
 		case GuiMenu:
 			items.append(new PropItem("Items", PropList, QStringList()));
-            items.append(new PropItem("StartPos", PropNumber, 0));
-            items.append(new PropItem("CurPos", PropNumber, -1));
+			items.append(new PropItem("StartPos", PropNumber, 0));
+			items.append(new PropItem("CurPos", PropNumber, -1));
 			items.append(new PropItem("Font", PropNumber, 0));
 		break;
 		case GuiProgress:
@@ -36,7 +36,7 @@ MItemProperty::MItemProperty(GuiType guiType)
 			items.append(new PropItem("Max", PropNumber, 0));
 			items.append(new PropItem("Text", PropString, ""));
 			items.append(new PropItem("Font", PropNumber, 0));
-            items.append(new PropItem("IsVisible", PropNumber, 1));
+			items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiCombo:
 		break;
@@ -59,7 +59,9 @@ void MItemProperty::addProperty(PropType type, QString name, QVariant data)
 PropItem *MItemProperty::getProperty(int32_t index)
 {
 	if (index < items.size())
+	{
 		return items.at(index);
+	}
 
 	return NULL;
 }
@@ -67,7 +69,9 @@ PropItem *MItemProperty::getProperty(int32_t index)
 void MItemProperty::setProperty(int32_t index, QVariant value)
 {
 	if (index < items.size())
+	{
 		items[index]->data = value;
+	}
 }
 
 //
@@ -147,7 +151,7 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 bool validate(const QString &value)
 {
 
-    return true;
+	return true;
 }
 
 /**
@@ -159,41 +163,41 @@ bool validate(const QString &value)
  */
 bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    Q_UNUSED(role)
+	Q_UNUSED(role)
 
-    if (pCurPropList)
-    {
-        PropItem *pItem = pCurPropList->getProperty(index.row());
+	if (pCurPropList)
+	{
+		PropItem *pItem = pCurPropList->getProperty(index.row());
 
-        // Если в числовое поле была введена строка
-        if (pItem->type == PropNumber)
-        {
-            bool ok;
-            int val = value.toInt(&ok);
+		// Если в числовое поле была введена строка
+		if (pItem->type == PropNumber)
+		{
+			bool ok;
+			int val = value.toInt(&ok);
 
-            if (!ok)
-            {
-                return false;
-            }
-        }
+			if (!ok)
+			{
+				return false;
+			}
+		}
 
-        // При изменении полей-списков сам список изменяться не должен
-        if (pItem->type == PropList || pItem->type == PropFiles)
-        {
-            return false;
-        }
+		// При изменении полей-списков сам список изменяться не должен
+		if (pItem->type == PropList || pItem->type == PropFiles)
+		{
+			return false;
+		}
 
-        if (pItem)
-        {
-            beginResetModel();
-            pItem->data = value;
-            endResetModel();
-            emit updateScene();
-            return true;
-        }
-    }
+		if (pItem)
+		{
+			beginResetModel();
+			pItem->data = value;
+			endResetModel();
+			emit updateScene();
+			return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 /**
@@ -203,8 +207,8 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
  */
 Qt::ItemFlags MItemPropertyModel::flags(const QModelIndex &index) const
 {
-    if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
-        return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	if (index.column() > 0)  // Если выбрана вторая колонка, то можно редактировать
+		return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }

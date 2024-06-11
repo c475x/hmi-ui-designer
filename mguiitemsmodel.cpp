@@ -1,4 +1,6 @@
 #include <qrect.h>
+#include <QLineEdit>
+
 #include "mguiitemsmodel.h"
 
 /**
@@ -28,7 +30,7 @@ QVariant MGuiItemsModel::data(const QModelIndex &index, int role) const
 			y = index.row();
 			if (x < items.length())
 			{
-				return QVariant("[" + QString(items.at(y)->type) + "]");
+				return QVariant("[" + QString(items.at(y)->name) + "]");
 			}
 		break;
 		case Qt::BackgroundRole:
@@ -69,6 +71,20 @@ void MGuiItemsModel::addItem(GuiType type)
 }
 
 /**
+ * @brief MGuiItemsModel::getItem - функция получения элемента по его индексу
+ * @param index - номер получаемого элемента
+ * @return - сам элемент
+ */
+MBase *MGuiItemsModel::getItem(int32_t index)
+{
+	if (index < items.size())
+		return items.at(index);
+	else
+		return NULL;
+}
+
+
+/**
  * @brief MGuiItemsModel::newItem - слот, вызывается когда дропают иконку элемента управления в область экрана
  * @param id - тип элемента управления
  */
@@ -85,21 +101,29 @@ void MGuiItemsModel::selectItem(int32_t id)
 {
 	// Перебираем все элементы из хранилища
 	for (int32_t i = 0; i < items.length(); i++)
+	{
 		// Меняем всем признаки выбора
 		items[i]->setSelected(i == id);
+	}
 
 	scene->update();
 }
 
 /**
- * @brief MGuiItemsModel::getItem - функция получения элемента по его номеру
- * @param index - номер получаемого элемента
- * @return - сам элемент
+ * @brief MGuiItemsModel::renameItem - слот, вызывается при двойном клике по элементу (событии переименования)
+ * @param id - номер переименовываемого элемента
+ * @param newName - новое имя переименовываемого элемента
  */
-MBase *MGuiItemsModel::getItem(int32_t index)
+void MGuiItemsModel::renameItem(int32_t id, QWidget *editor)
 {
-	if (index < items.size())
-		return items.at(index);
-	else
-		return NULL;
+	QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
+	if (lineEdit)
+	{
+		if (id < 0 || id >= items.size() || lineEdit->text().length() == 0)
+		{
+			return;
+		}
+
+		items[id]->name = lineEdit->text();
+	}
 }

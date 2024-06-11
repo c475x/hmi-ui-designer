@@ -34,9 +34,13 @@ MListEditor::MListEditor(QStringList data, bool isFiles, QWidget *parent) : QDia
 	btnOk->setDefault(true);
 
 	if (isFiles)
+	{
 		layKeys->addStretch();
+	}
 	else
+	{
 		layKeys->addWidget(edit);
+	}
 
 	layKeys->addWidget(btnAdd);
 	layKeys->addWidget(btnDel);
@@ -74,15 +78,15 @@ void MListEditor::btnAddPressed()
 	if (isFiles)
 	{
 		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы", "D:/git/hmi-prepare-gui/resources/icons");
-        FillList(fnames);
+		FillList(fnames);
 	}
 	else
 	{
-        // Проверяем, не пустая ли строка
-        if (edit->text().length() > 0)
-        {
-            list->addItem(edit->text());
-        }
+		// Проверяем, не пустая ли строка
+		if (edit->text().length() > 0)
+		{
+			list->addItem(edit->text());
+		}
 
 		edit->clear();
 	}

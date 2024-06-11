@@ -4,15 +4,21 @@
  <widget class="QMainWindow" name="MainForm">
   <property name="geometry">
    <rect>
-	<x>0</x>
-	<y>0</y>
-	<width>826</width>
-	<height>600</height>
+    <x>0</x>
+    <y>0</y>
+    <width>814</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="font">
    <font>
-	<pointsize>12</pointsize>
+    <pointsize>12</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -20,184 +26,184 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-	<item row="0" column="0">
-	 <widget class="QFrame" name="frameGuiEditor">
-	  <property name="frameShape">
-	   <enum>QFrame::StyledPanel</enum>
-	  </property>
-	  <property name="frameShadow">
-	   <enum>QFrame::Raised</enum>
-	  </property>
-	  <layout class="QGridLayout" name="gridLayout">
-	   <property name="leftMargin">
-		<number>0</number>
-	   </property>
-	   <property name="topMargin">
-		<number>0</number>
-	   </property>
-	   <property name="rightMargin">
-		<number>0</number>
-	   </property>
-	   <property name="bottomMargin">
-		<number>0</number>
-	   </property>
-	   <item row="1" column="1">
-		<widget class="QFrame" name="frameGuiSettings">
-		 <property name="maximumSize">
-		  <size>
-		   <width>512</width>
-		   <height>16777215</height>
-		  </size>
-		 </property>
-		 <property name="frameShape">
-		  <enum>QFrame::StyledPanel</enum>
-		 </property>
-		 <property name="frameShadow">
-		  <enum>QFrame::Raised</enum>
-		 </property>
-		 <layout class="QVBoxLayout" name="verticalLayout">
-		  <property name="leftMargin">
-		   <number>0</number>
-		  </property>
-		  <property name="topMargin">
-		   <number>0</number>
-		  </property>
-		  <property name="rightMargin">
-		   <number>0</number>
-		  </property>
-		  <property name="bottomMargin">
-		   <number>0</number>
-		  </property>
-		  <item>
-		   <widget class="QSplitter" name="splitter">
-			<property name="lineWidth">
-			 <number>1</number>
-			</property>
-			<property name="midLineWidth">
-			 <number>0</number>
-			</property>
-			<property name="orientation">
-			 <enum>Qt::Horizontal</enum>
-			</property>
-			<widget class="QListView" name="listGuiItems">
-			 <property name="sizePolicy">
-			  <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
-			   <horstretch>0</horstretch>
-			   <verstretch>0</verstretch>
-			  </sizepolicy>
-			 </property>
-			 <property name="maximumSize">
-			  <size>
-			   <width>180</width>
-			   <height>16777215</height>
-			  </size>
-			 </property>
-			 <property name="font">
-			  <font>
-			   <pointsize>12</pointsize>
-			  </font>
-			 </property>
-			</widget>
-			<widget class="QTableView" name="tableItemProperties"/>
-		   </widget>
-		  </item>
-		 </layout>
-		</widget>
-	   </item>
-	   <item row="0" column="1">
-		<widget class="QGraphicsView" name="screen">
-		 <property name="sizePolicy">
-		  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-		   <horstretch>0</horstretch>
-		   <verstretch>0</verstretch>
-		  </sizepolicy>
-		 </property>
-		 <property name="minimumSize">
-		  <size>
-		   <width>512</width>
-		   <height>256</height>
-		  </size>
-		 </property>
-		 <property name="maximumSize">
-		  <size>
-		   <width>512</width>
-		   <height>256</height>
-		  </size>
-		 </property>
-		 <property name="frameShape">
-		  <enum>QFrame::NoFrame</enum>
-		 </property>
-		 <property name="verticalScrollBarPolicy">
-		  <enum>Qt::ScrollBarAlwaysOff</enum>
-		 </property>
-		 <property name="horizontalScrollBarPolicy">
-		  <enum>Qt::ScrollBarAlwaysOff</enum>
-		 </property>
-		 <property name="sceneRect">
-		  <rectf>
-		   <x>0.000000000000000</x>
-		   <y>0.000000000000000</y>
-		   <width>512.000000000000000</width>
-		   <height>256.000000000000000</height>
-		  </rectf>
-		 </property>
-		 <property name="dragMode">
-		  <enum>QGraphicsView::NoDrag</enum>
-		 </property>
-		</widget>
-	   </item>
-	   <item row="0" column="0" rowspan="2">
-		<spacer name="horizontalSpacer">
-		 <property name="orientation">
-		  <enum>Qt::Horizontal</enum>
-		 </property>
-		 <property name="sizeHint" stdset="0">
-		  <size>
-		   <width>40</width>
-		   <height>20</height>
-		  </size>
-		 </property>
-		</spacer>
-	   </item>
-	  </layout>
-	 </widget>
-	</item>
-	<item row="0" column="1">
-	 <widget class="QGroupBox" name="framePalette">
-	  <property name="sizePolicy">
-	   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-		<horstretch>0</horstretch>
-		<verstretch>0</verstretch>
-	   </sizepolicy>
-	  </property>
-	  <property name="title">
-	   <string>Элементы управления</string>
-	  </property>
-	 </widget>
-	</item>
-	<item row="0" column="2">
-	 <spacer name="horizontalSpacer_2">
-	  <property name="orientation">
-	   <enum>Qt::Horizontal</enum>
-	  </property>
-	  <property name="sizeHint" stdset="0">
-	   <size>
-		<width>40</width>
-		<height>20</height>
-	   </size>
-	  </property>
-	 </spacer>
-	</item>
+    <item row="0" column="0">
+     <widget class="QFrame" name="frameGuiEditor">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item row="1" column="1">
+        <widget class="QFrame" name="frameGuiSettings">
+         <property name="maximumSize">
+          <size>
+           <width>512</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QSplitter" name="splitter">
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="midLineWidth">
+             <number>0</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QListView" name="listGuiItems">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>180</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+            </widget>
+            <widget class="QTableView" name="tableItemProperties"/>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QGraphicsView" name="screen">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>512</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>512</width>
+           <height>256</height>
+          </size>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="sceneRect">
+          <rectf>
+           <x>0.000000000000000</x>
+           <y>0.000000000000000</y>
+           <width>512.000000000000000</width>
+           <height>256.000000000000000</height>
+          </rectf>
+         </property>
+         <property name="dragMode">
+          <enum>QGraphicsView::NoDrag</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QGroupBox" name="framePalette">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Элементы управления</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <spacer name="horizontalSpacer_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
-	<rect>
-	 <x>0</x>
-	 <y>0</y>
-	 <width>826</width>
-	 <height>27</height>
-	</rect>
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>814</width>
+     <height>27</height>
+    </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

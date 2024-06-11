@@ -9,22 +9,30 @@ MainForm::MainForm(QWidget *parent)
 	, ui(new Ui::MainForm)
 {
 	ui->setupUi(this);
+
 	setWindowTitle("HMI UI Designer");
+	setMaximumWidth(window()->width());
 
 	qApp->installEventFilter(this);
 
-    // Графическая сцена для отображения элементов рабочего экрана, которая отображается компонентом ui->screen
+	// Графическая сцена для отображения элементов рабочего экрана, которая отображается компонентом ui->screen
 	scene = new MGraphicsScene();
 	scene->resize(ui->screen->width(), ui->screen->height());
 	guiModel = new MGuiItemsModel(scene);
 
-    // Статусбар для отображения информационных сообщений
+	// Статусбар для отображения информационных сообщений
 	status = new QLabel(this);
 	ui->statusbar->addWidget(status, 100);
 
-    // Сигнал clicked() заменен на pressed(), так как сигнал clicked() приводил к некорректному поведению при выборе элемента в списке
-    // Если мышь была нажата на элементе, а отпущена вне - элемент выделялся, но не появлялся редактор его свойств
+	// Сигнал clicked() заменен на pressed(), так как сигнал clicked() приводил к некорректному поведению при выборе элемента в списке
+	// Если мышь была нажата на элементе, а отпущена вне - элемент выделялся, но не появлялся редактор его свойств
 	connect(ui->listGuiItems, SIGNAL(pressed(QModelIndex)), this, SLOT(listItemClicked(QModelIndex)));
+
+	// Обработка переименования элемента
+	connect(ui->listGuiItems->itemDelegate(), &QAbstractItemDelegate::commitData, this, [this](QWidget *editor) {
+		QModelIndex index = ui->listGuiItems->currentIndex();
+		guiModel->renameItem(index.row(), editor);
+	});
 
 	propModel = new MItemPropertyModel(this);
 	ui->tableItemProperties->setModel(propModel);
@@ -34,8 +42,6 @@ MainForm::MainForm(QWidget *parent)
 	connect(propModel, SIGNAL(updateScene()), scene, SLOT(updateScene()));
 	auto res = connect(propModel, &MItemPropertyModel::setWidget, this, &MainForm::setWidget);
 	qDebug() << "Connect propModel to MainForm: " << res;
-
-
 	res = connect(scene, &MGraphicsScene::newItem, guiModel, &MGuiItemsModel::newItem);
 	qDebug() << "Connect scene to guiModel: " << res;
 	res = connect(this, &MainForm::selectItem, guiModel, &MGuiItemsModel::selectItem);
@@ -98,6 +104,7 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 			}
 		}
 	}
+
 	// Обработка кликов по таблице свойств
 	if (obj == ui->tableItemProperties->viewport())
 	{
@@ -108,6 +115,7 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 			{
 				// Получаем номер строки / номер свойства
 				int32_t pos = ui->tableItemProperties->indexAt(ev->pos()).row();
+
 				// Если у выбранного свойства тип "Список файлов"...
 				if (propModel->getProp(pos)->type == PropFiles)
 				{
@@ -116,24 +124,35 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 					pLe->resize(640, 480);
 					pLe->setModal(true);
 					pLe->setWindowTitle("Редактор списка файлов");
+
 					// Соединяем сигнал-слот для получения результата от формы диалога редактора
 					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
+
 					// Вызываем редактор модально
 					int res = pLe->exec();
+
 					// Если нажата кнопка "Ok", то значит в переменной tempPropertyList уже
 					// лежит новый список строк, сформированный редактором
 					if (res)
 					{
-						propModel->setFileList(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
+						// Сохраняем новый список файлов в свойство
+						propModel->setFileList(pos, tempPropertyList);
+
 						// Загружаем изображения иконок в графическое отображение
 						QImage tempImage;
+
 						// Получаем номер выбранного графического элемента в сцене
 						int32_t ind = ui->listGuiItems->selectionModel()->selectedIndexes()[0].row();
+
 						// Получаем указатель на графический объект иконки
 						MIconSet *icon = (MIconSet *)guiModel->getItem(ind);
+
 						// Очищаем старые иконки, чтобы не накапливались
 						if (tempPropertyList.size())
+						{
 							icon->clearIcons();
+						}
+
 						// Перебираем список файлов
 						foreach(QString fn, tempPropertyList)
 						{
@@ -142,6 +161,7 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 						}
 					}
 				}
+
 				// Если у выбранного свойства тип "Список строк"...
 				if (propModel->getProp(pos)->type == PropList)
 				{
@@ -150,10 +170,13 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 					pLe->resize(640, 480);
 					pLe->setModal(true);
 					pLe->setWindowTitle("Редактор списка");
+
 					// Соединяем сигнал-слот для получения результата от формы диалога редактора
 					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
+
 					// Вызываем редактор модально
 					int res = pLe->exec();
+
 					// Если нажата кнопка "Ok", то значит в переменной tempPropertyList уже
 					// лежит новый список строк, сформированный редактором
 					if (res)
@@ -186,7 +209,7 @@ void MainForm::listItemClicked(QModelIndex index)
 	MBase *pItem = guiModel->getItem(index.row());
 	if (pItem)
 	{
-		showStatus(QString("clicked on %1").arg(pItem->type));
+		showStatus(QString("clicked on %1").arg(pItem->name));
 		propModel->setList(pItem->props);
 	}
 }

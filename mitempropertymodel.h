@@ -5,14 +5,15 @@
 #include <QAbstractTableModel>
 #include <QVector>
 #include <QPoint>
+
 #include "mtypes.h"
 
 // Структура свойства
 typedef struct _PropItem
 {
-	_PropItem() {this->name = ""; this->type = PropString; this->data = QVariant();}
-	_PropItem(QString name, PropType type, QVariant data) {this->name = name; this->type = type; this->data = data;}
-	QString name;	   // Имя свойства
+	_PropItem() { this->name = ""; this->type = PropString; this->data = QVariant(); }
+	_PropItem(QString name, PropType type, QVariant data) { this->name = name; this->type = type; this->data = data; }
+	QString name;	  // Имя свойства
 	PropType type;	  // Тип свойства
 	QVariant data;	  // Значение свойства
 } PropItem;
@@ -26,7 +27,7 @@ public:
 	MItemProperty(GuiType guiType);
 	~MItemProperty();
 	void addProperty(PropType type, QString name, QVariant data = QVariant());
-	int32_t getSize() {return items.size();}
+	int32_t getSize() { return items.size(); }
 	PropItem *getProperty(int32_t index);
 	void setProperty(int32_t index, QVariant value);
 
@@ -43,8 +44,8 @@ class MItemPropertyModel : public QAbstractTableModel
 	Q_OBJECT
 
 public:
-    MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) { pCurPropList = NULL; }
-    ~MItemPropertyModel() { }
+	MItemPropertyModel(QObject *parent = nullptr) : QAbstractTableModel(parent) { pCurPropList = NULL; }
+	~MItemPropertyModel() { }
 	//void setGuiType(GuiType gui_type);
 	//void setGuiType(QString str);
 	void setPropCur(int32_t index, QVariant value);
