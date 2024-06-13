@@ -27,7 +27,7 @@ protected:
 public slots:
 	void newItem(GuiType id);
 	void selectItem(int32_t id);
-	void renameItem(int32_t id, QWidget *editor);
+	void renameItem(int32_t id, QString newName);
 	void deleteItem(int32_t id);
 };
 

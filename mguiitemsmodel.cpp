@@ -174,22 +174,16 @@ void MGuiItemsModel::selectItem(int32_t id)
  * @param id - номер переименовываемого элемента
  * @param newName - новое имя переименовываемого элемента
  */
-void MGuiItemsModel::renameItem(int32_t id, QWidget *editor)
+void MGuiItemsModel::renameItem(int32_t id, QString newName)
 {
-	QLineEdit *lineEdit = qobject_cast<QLineEdit*>(editor);
-	if (lineEdit)
+	// Меняем название только если элемент существует и новое имя не является пустой строкой
+	if (id < 0 || id >= items.size() || newName.isEmpty())
 	{
-		// Меняем название только если элемент существует и новое имя не является пустой строкой
-		if (id < 0 || id >= items.size() || lineEdit->text().isEmpty())
-		{
-			return;
-		}
-
-		items[id]->name = lineEdit->text().left(20);
+		return;
 	}
-}
 
-#include <QDebug>
+	items[id]->name =newName.left(20);
+}
 
 /**
  * @brief MGuiItemsModel::deleteItem - слот, вызывается при нажатии клавиши Del и удаляет выбранный элемент

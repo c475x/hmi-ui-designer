@@ -6,6 +6,10 @@
 // ----------------------------------- MItemProperty -----------------------------------
 //
 
+/**
+ * @brief MItemProperty::MItemProperty - создает набор свойств графического элемента
+ * @param GuiType - тип графического элемента
+ */
 MItemProperty::MItemProperty(GuiType guiType)
 {
 	items.clear();
@@ -50,12 +54,23 @@ MItemProperty::~MItemProperty()
 
 }
 
+/**
+ * @brief MItemProperty::addProperty - добавляет свойство
+ * @param type - тип свойства
+ * @param name - имя свойства
+ * @param data - значение свойства
+ */
 void MItemProperty::addProperty(PropType type, QString name, QVariant data)
 {
 	PropItem *pItem = new PropItem(name, type, data);
 	items.append(pItem);
 }
 
+/**
+ * @brief MItemProperty::getProperty - получает свойство по индексу
+ * @param index - индекс свойства
+ * @return указатель на PropItem, если индекс валидный, иначе NULL
+ */
 PropItem *MItemProperty::getProperty(int32_t index)
 {
 	if (index < items.size())
@@ -66,6 +81,11 @@ PropItem *MItemProperty::getProperty(int32_t index)
 	return NULL;
 }
 
+/**
+ * @brief MItemProperty::setProperty - устанавливает значение свойства по индексу
+ * @param index - индекс свойства
+ * @param value - новое значение свойства
+ */
 void MItemProperty::setProperty(int32_t index, QVariant value)
 {
 	if (index < items.size())
@@ -78,6 +98,11 @@ void MItemProperty::setProperty(int32_t index, QVariant value)
 // ------------------------------------ MItemPropertyModel --------------------------------
 //
 
+/**
+ * @brief MItemPropertyModel::rowCount - функция возвращает количество строк таблицы
+ * @param parent - неведомо
+ * @return - возвращаем количество свойств в таблице
+ */
 int MItemPropertyModel::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent)
@@ -87,12 +112,23 @@ int MItemPropertyModel::rowCount(const QModelIndex &parent) const
 	return 0;
 }
 
+/**
+ * @brief MItemPropertyModel::columnCount - функция возвращает количество столбцов таблицы
+ * @param parent - неведомо
+ * @return - константно 2 (название свойства и его значение)
+ */
 int MItemPropertyModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent)
 	return 2;
 }
 
+/**
+ * @brief MItemPropertyModel::data - функция для получения данных ячейки
+ * @param index - индекс ячейки
+ * @param role - роль данных
+ * @return - значение ячейки или пустой QVariant
+ */
 QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 {
 	if (pCurPropList)
@@ -143,12 +179,6 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-bool validate(const QString &value)
-{
-
-	return true;
-}
-
 /**
  * @brief MItemPropertyModel::setData - функция вызывается по окончании редактирования ячейки
  * @param index - позиция ячейки
@@ -168,7 +198,7 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
 		if (pItem->type == PropNumber)
 		{
 			bool ok;
-			int val = value.toInt(&ok);
+			value.toInt(&ok);
 
 			if (!ok)
 			{
@@ -178,6 +208,12 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
 
 		// При изменении полей-списков сам список изменяться не должен
 		if (pItem->type == PropList || pItem->type == PropFiles)
+		{
+			return false;
+		}
+
+		// Поле StartPos элемента типа GuiMenu предназначено только для чтения
+		if (pCurPropList->getGuiType() == GuiMenu && pItem->name == "StartPos")
 		{
 			return false;
 		}
@@ -211,6 +247,11 @@ Qt::ItemFlags MItemPropertyModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
+/**
+ * @brief MItemPropertyModel::setPropCur - устанавливает значение свойства по индексу для текущего набора свойств
+ * @param index - индекс свойства
+ * @param value - новое значение свойства
+ */
 void MItemPropertyModel::setPropCur(int32_t index, QVariant value)
 {
 	if (pCurPropList)
@@ -225,6 +266,12 @@ void MItemPropertyModel::setPropCur(int32_t index, QVariant value)
 	}
 }
 
+/**
+ * @brief MItemPropertyModel::setProp - устанавливает значение свойства по индексу для указанного типа GUI
+ * @param gui - тип графического элемента
+ * @param index - индекс свойства
+ * @param value - новое значение свойства
+ */
 void MItemPropertyModel::setProp(GuiType gui, int32_t index, QVariant value)
 {
 	PropItem *pItem = pCurPropList->getProperty(index);
@@ -236,6 +283,10 @@ void MItemPropertyModel::setProp(GuiType gui, int32_t index, QVariant value)
 	}
 }
 
+/**
+ * @brief MItemPropertyModel::setList - устанавливает текущий набор свойств
+ * @param list - указатель на новый набор свойств
+ */
 void MItemPropertyModel::setList(MItemProperty *list)
 {
 	beginResetModel();
@@ -243,11 +294,22 @@ void MItemPropertyModel::setList(MItemProperty *list)
 	endResetModel();
 }
 
+/**
+ * @brief MItemPropertyModel::getProp - получает свойство по индексу
+ * @param index - индекс свойства
+ * @return указатель на PropItem, если индекс валидный, иначе NULL
+ */
 PropItem *MItemPropertyModel::getProp(int32_t index)
 {
 	return pCurPropList->getProperty(index);
 }
 
+/**
+ * @brief MItemPropertyModel::setFileList - устанавливает список файлов по индексу
+ * @param index - индекс свойства
+ * @param data - список имен файлов
+ * @return true, если установка прошла успешно, иначе false
+ */
 bool MItemPropertyModel::setFileList(int32_t index, QStringList data)
 {
 	PropItem *pItem = pCurPropList->getProperty(index);

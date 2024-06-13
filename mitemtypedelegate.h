@@ -3,6 +3,9 @@
 
 #include <QStyledItemDelegate>
 
+/**
+ * @brief MItemTypeDelegate - класс делегата для отрисовки типа элемента в QListView
+ */
 class MItemTypeDelegate : public QStyledItemDelegate
 {
 public:

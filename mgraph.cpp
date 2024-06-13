@@ -166,14 +166,18 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
 	switch (props->getProperty(PROP_FONT)->data.toInt())
 	{
-		case 0:
+		default:
 			painter->setFont(QFont("Courier New", 30));
 		break;
+		case 1:
+			painter->setFont(QFont("Courier New", 60));
+		break;
+
 	}
 
 	// Рисуем текст, цвет текста черный
 	painter->setPen(Qt::black);
-	painter->drawStaticText(boundingRect().topLeft(), QStaticText(props->getProperty(PROP_TEXT)->data.toString()));
+	painter->drawText(boundingRect(), props->getProperty(PROP_TEXT)->data.toString());
 }
 
 //
@@ -339,12 +343,12 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	painter->drawRect(boundingRect());
 
 	// Установка выбранного шрифта
-	switch (props->getProperty(PROP_FONT)->data.toInt())
-	{
-		case 0:
-			painter->setFont(QFont("Courier New", 30));
-		break;
-	}
+	// switch (props->getProperty(PROP_FONT)->data.toInt())
+	// {
+	// 	case 0:
+	// 		painter->setFont(QFont("Courier New", 30));
+	// 	break;
+	// }
 
 	// Получаем список текстовых строк меню
 	QStringList temp = props->getProperty(PROP_ITEMS)->data.toStringList();
@@ -386,11 +390,14 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	// Начальная позиция
 	int startPos = props->getProperty(PROP_STARTPOS)->data.toInt();
 
+	// Высота строки
+	int rowHeight = 35;
+
 	// Перебираем все строки из списка
 	for (uint16_t i = startPos; i < temp.length(); i++)
 	{
 		// Прерывание цикла отведено отдельно, чтобы изменение текущего элемента успело прорисоваться
-		if (35 * (i + 1 - startPos) > props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE)
+		if (rowHeight * (i + 1 - startPos) > props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE)
 		{
 			break;
 		}
@@ -400,9 +407,9 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 		{
 			// Рисуем черный прямоугольник выделения
 			painter->drawRect(boundingRect().topLeft().x(),
-						  boundingRect().topLeft().y() + 35 * (i - startPos),
+						  boundingRect().topLeft().y() + rowHeight * (i - startPos),
 						  boundingRect().topRight().x() - boundingRect().topLeft().x(),
-						  35
+						  rowHeight
 						);
 
 			// Белый цвет для текста выделенного элемента
@@ -410,7 +417,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 		}
 
 		// Рисуем текст
-		painter->drawStaticText(boundingRect().topLeft() + QPoint(24, 35 * (i - startPos)), QStaticText(temp.at(i)));
+		painter->drawStaticText(boundingRect().topLeft() + QPoint(24, rowHeight * (i - startPos)), QStaticText(temp.at(i)));
 
 		// Возвращаем черный цвет для следующей строки
 		if (i == props->getProperty(PROP_CURPOS)->data.toInt())

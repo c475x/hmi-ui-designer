@@ -16,6 +16,9 @@ MainForm::MainForm(QWidget *parent)
 
 	qApp->installEventFilter(this);
 
+	// Установка дефолтной ширины виджетов в сплиттере
+	ui->splitter->setSizes({ 205, 305 });
+
 	// Графическая сцена для отображения элементов рабочего экрана, которая отображается компонентом ui->screen
 	scene = new MGraphicsScene();
 	scene->resize(ui->screen->width(), ui->screen->height());
@@ -36,7 +39,7 @@ MainForm::MainForm(QWidget *parent)
 	// Соединяем сигнал-слот переименования элемента при редактировании
 	connect(ui->listGuiItems->itemDelegate(), &QAbstractItemDelegate::commitData, this, [this](QWidget *editor) {
 		QModelIndex index = ui->listGuiItems->currentIndex();
-		guiModel->renameItem(index.row(), editor);
+		guiModel->renameItem(index.row(), qobject_cast<QLineEdit *>(editor)->text());
 	});
 
 	// Соединяем сигнал-слот удаления элемента
