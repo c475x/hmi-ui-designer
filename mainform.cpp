@@ -69,6 +69,7 @@ MainForm::MainForm(QWidget *parent)
 	guiIconsModel->appendRow(new QStandardItem(QIcon(":/icons/resources/icons/icon_GUI_label.png"), "Надпись"));
 	guiIconsModel->appendRow(new QStandardItem(QIcon(":/icons/resources/icons/icon_GUI_menu.png"), "Меню"));
 	guiIconsModel->appendRow(new QStandardItem(QIcon(":/icons/resources/icons/icon_GUI_progress.png"), "Прогресс"));
+	guiIconsModel->appendRow(new QStandardItem(QIcon(":/icons/resources/icons/icon_GUI_combo.png"), "Комбо"));
 
 	QVBoxLayout *lay = new QVBoxLayout(ui->framePalette);
 	listPalette = new MListWidget(ui->framePalette);
@@ -80,6 +81,8 @@ MainForm::MainForm(QWidget *parent)
 	item = new QListWidgetItem(QIcon(":/icons/resources/icons/icon_GUI_menu.png"), "Меню", NULL, GuiMenu);
 	listPalette->addItem(item);
 	item = new QListWidgetItem(QIcon(":/icons/resources/icons/icon_GUI_progress.png"), "Прогресс", NULL, GuiProgress);
+	listPalette->addItem(item);
+	item = new QListWidgetItem(QIcon(":/icons/resources/icons/icon_GUI_combo.png"), "Комбо", NULL, GuiCombo);
 	listPalette->addItem(item);
 	lay->addWidget(listPalette);
 	ui->framePalette->setLayout(lay);
@@ -162,10 +165,11 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 				if (propModel->getProp(pos)->type == PropFiles)
 				{
 					// Создаем объект формы диалога редактора
-					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), true);
+					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), propModel->getProp(pos)->type);
 					pLe->resize(640, 480);
 					pLe->setModal(true);
 					pLe->setWindowTitle("Редактор списка файлов");
+					pLe->setWindowFlags(pLe->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 					// Соединяем сигнал-слот для получения результата от формы диалога редактора
 					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
@@ -178,7 +182,7 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 					if (res)
 					{
 						// Сохраняем новый список файлов в свойство
-						propModel->setFileList(pos, tempPropertyList);
+						propModel->setListData(pos, tempPropertyList);
 
 						// Загружаем изображения иконок в графическое отображение
 						QImage tempImage;
@@ -208,10 +212,11 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 				if (propModel->getProp(pos)->type == PropList)
 				{
 					// Создаем объект формы диалога редактора
-					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), false);
+					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), propModel->getProp(pos)->type);
 					pLe->resize(640, 480);
 					pLe->setModal(true);
 					pLe->setWindowTitle("Редактор списка");
+					pLe->setWindowFlags(pLe->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
 					// Соединяем сигнал-слот для получения результата от формы диалога редактора
 					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
@@ -223,7 +228,31 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 					// лежит новый список строк, сформированный редактором
 					if (res)
 					{
-						propModel->setFileList(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
+						propModel->setListData(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
+					}
+				}
+
+				// Если у выбранного свойства тип "Элементы комбо"...
+				if (propModel->getProp(pos)->type == PropCombo)
+				{
+					// Создаем объект формы диалога редактора
+					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), propModel->getProp(pos)->type);
+					pLe->resize(640, 480);
+					pLe->setModal(true);
+					pLe->setWindowTitle("Редактор комбо");
+					pLe->setWindowFlags(pLe->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
+					// Соединяем сигнал-слот для получения результата от формы диалога редактора
+					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
+
+					// Вызываем редактор модально
+					int res = pLe->exec();
+
+					// Если нажата кнопка "Ok", то значит в переменной tempPropertyList уже
+					// лежит новый список строк, сформированный редактором
+					if (res)
+					{
+						propModel->setListData(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
 					}
 				}
 			}

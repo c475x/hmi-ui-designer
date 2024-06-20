@@ -2,6 +2,8 @@
 
 #include "mitempropertymodel.h"
 
+#include "mgraph.h"
+
 //
 // ----------------------------------- MItemProperty -----------------------------------
 //
@@ -43,6 +45,11 @@ MItemProperty::MItemProperty(GuiType guiType)
 			items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiCombo:
+			items.append(new PropItem("Items", PropCombo, QVariant::fromValue(QVector<QPair<QString, QStringList>>())));
+			items.append(new PropItem("StartPos", PropNumber, 0));
+			items.append(new PropItem("CurPos", PropNumber, -1));
+			items.append(new PropItem("CurItemIndex", PropComboIndex, QVariant::fromValue(QVector<int>())));
+			items.append(new PropItem("Font", PropNumber, 0));
 		break;
 	}
 
@@ -156,7 +163,10 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 								return QVariant(pItem->data);
 							break;
 							case PropCombo:	 // Комбобокс
-								return QVariant("-");
+							{
+								QString info = QString("[%1]").arg(pItem->data.value<QVector<QPair<QString, QStringList>>>().length());
+								return QVariant(info);
+							}
 							break;
 							case PropFiles:	 // Список имен файлов
 							case PropList:	  // Список строк
@@ -164,6 +174,19 @@ QVariant MItemPropertyModel::data(const QModelIndex &index, int role) const
 								QStringList temp = pItem->data.toStringList();
 								QString info = QString("[%1]").arg(temp.size());
 								return QVariant(info);
+							}
+							break;
+							case PropComboIndex:
+							{
+								int curPos = pCurPropList->getProperty(MCombo::PROP_CURPOS)->data.toInt();
+								if (curPos != -1)
+								{
+									return QVariant(pItem->data.value<QVector<int>>().at(curPos));
+								}
+								else
+								{
+									return "-";
+								}
 							}
 							break;
 						}
@@ -215,6 +238,37 @@ bool MItemPropertyModel::setData(const QModelIndex &index, const QVariant &value
 		// Поле StartPos элемента типа GuiMenu предназначено только для чтения
 		if (pCurPropList->getGuiType() == GuiMenu && pItem->name == "StartPos")
 		{
+			return false;
+		}
+
+		// Поле StartPos элемента типа GuiCombo предназначено только для чтения
+		if (pCurPropList->getGuiType() == GuiCombo && pItem->name == "StartPos")
+		{
+			return false;
+		}
+
+		// При изменении поля CurItemIndex элемента GuiCombo нужно изменить значение выбранного элемента
+		if (pCurPropList->getGuiType() == GuiCombo && pItem->name == "CurItemIndex")
+		{
+			int curPos = pCurPropList->getProperty(MCombo::PROP_CURPOS)->data.toInt();
+
+			if (pItem && curPos != -1)
+			{
+				QVector<int> indexes = pCurPropList->getProperty(MCombo::PROP_CURITEMINDEX)->data.value<QVector<int>>();
+				QVector<QPair<QString, QStringList>> items = pCurPropList->getProperty(MCombo::PROP_ITEMS)->data.value<QVector<QPair<QString, QStringList>>>();
+
+				if (value.toInt() >= 0 && value.toInt() < items.length())
+				{
+					indexes[curPos] = value.toInt();
+
+					beginResetModel();
+					pItem->data = QVariant::fromValue(indexes);
+					endResetModel();
+					emit updateScene();
+					return true;
+				}
+			}
+
 			return false;
 		}
 
@@ -305,12 +359,12 @@ PropItem *MItemPropertyModel::getProp(int32_t index)
 }
 
 /**
- * @brief MItemPropertyModel::setFileList - устанавливает список файлов по индексу
+ * @brief MItemPropertyModel::setListData - устанавливает список строк по индексу
  * @param index - индекс свойства
- * @param data - список имен файлов
+ * @param data - список строк
  * @return true, если установка прошла успешно, иначе false
  */
-bool MItemPropertyModel::setFileList(int32_t index, QStringList data)
+bool MItemPropertyModel::setListData(int32_t index, QVariant data)
 {
 	PropItem *pItem = pCurPropList->getProperty(index);
 	if (pItem)

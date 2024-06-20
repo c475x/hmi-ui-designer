@@ -122,6 +122,9 @@ void MGuiItemsModel::addItem(GuiType type)
 		case GuiMenu:
 			temp = new MMenu(generateElementName("menu", items), QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
 		break;
+		case GuiCombo:
+			temp = new MCombo(generateElementName("combo", items), QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
+		break;
 	}
 
 	scene->addItem(temp);
@@ -142,7 +145,6 @@ MBase *MGuiItemsModel::getItem(int32_t index)
 	else
 		return NULL;
 }
-
 
 /**
  * @brief MGuiItemsModel::newItem - слот, вызывается когда дропают иконку элемента управления в область экрана
@@ -182,7 +184,8 @@ void MGuiItemsModel::renameItem(int32_t id, QString newName)
 		return;
 	}
 
-	items[id]->name =newName.left(20);
+	// Максимальное количество символов в названии - 20
+	items[id]->name = newName.left(20);
 }
 
 /**

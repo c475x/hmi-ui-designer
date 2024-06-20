@@ -4,18 +4,57 @@
 #include "mlisteditor.h"
 
 /**
+ * @brief convertToMap - конвертирует данные типа QVariant в QMap<QString, QStringList> (для комбо)
+ * @param data - данные
+ * @return - данные, приведенные к типу QMap<QString, QStringList>
+ */
+QMap<QString, QStringList> convertToMap(const QVariant &data)
+{
+	QMap<QString, QStringList> dataMap;
+
+	if (data.canConvert<QVariantMap>())
+	{
+		QMap<QString, QVariant> variantMap = data.toMap();
+		for (auto it = variantMap.begin(); it != variantMap.end(); ++it)
+		{
+			QStringList stringList;
+			if (it.value().canConvert<QStringList>())
+			{
+				stringList = it.value().toStringList();
+			}
+			else if (it.value().canConvert<QString>())
+			{
+				stringList.append(it.value().toString());
+			}
+			dataMap.insert(it.key(), stringList);
+		}
+	}
+
+	return dataMap;
+}
+
+/**
  * @brief MListEditor::MListEditor - создает диалоговое окно редактирования списка строк
  * @param data - данные
  * @param isFiles - являются ли данные путями
  * @param parent - родитель
  */
-MListEditor::MListEditor(QStringList data, bool isFiles, QWidget *parent) : QDialog(parent)
+MListEditor::MListEditor(QVariant data, PropType type, QWidget *parent) : QDialog(parent)
 {
-	list = new QListWidget(this);
+	this->type = type;
 
-	this->isFiles = isFiles;
-
-	FillList(data);
+	if (type == PropCombo)
+	{
+		table = new QTableWidget(this);
+		table->setColumnCount(2);
+		table->setHorizontalHeaderLabels(QStringList() << "Название" << "Строки");
+		FillTable(convertToMap(data));
+	}
+	else
+	{
+		list = new QListWidget(this);
+		FillList(data.toStringList());
+	}
 
 	QVBoxLayout *layMain = new QVBoxLayout(this);
 	QHBoxLayout *layKeys = new QHBoxLayout(this);
@@ -23,31 +62,36 @@ MListEditor::MListEditor(QStringList data, bool isFiles, QWidget *parent) : QDia
 	QPushButton *btnDel = new QPushButton("-", this);
 	QPushButton *btnAdd = new QPushButton("+", this);
 
-	if (!isFiles)
-	{
-		edit = new QLineEdit(this);
-		edit->setMaxLength(21);
-	}
-
 	connect(btnOk, &QPushButton::clicked, this, &MListEditor::btnOkPressed);
 	connect(btnDel, &QPushButton::clicked, this, &MListEditor::btnDelPressed);
 	connect(btnAdd, &QPushButton::clicked, this, &MListEditor::btnAddPressed);
 
 	btnOk->setDefault(true);
 
-	if (isFiles)
+	if (type != PropFiles)
 	{
-		layKeys->addStretch();
+		edit = new QLineEdit(this);
+		edit->setMaxLength(21);
+		layKeys->addWidget(edit);
 	}
 	else
 	{
-		layKeys->addWidget(edit);
+		layKeys->addStretch();
 	}
 
 	layKeys->addWidget(btnAdd);
 	layKeys->addWidget(btnDel);
 	layKeys->addWidget(btnOk);
-	layMain->addWidget(list);
+
+	if (type == PropCombo)
+	{
+		layMain->addWidget(table);
+	}
+	else
+	{
+		layMain->addWidget(list);
+	}
+
 	layMain->addLayout(layKeys);
 	this->setLayout(layMain);
 }
@@ -77,9 +121,9 @@ void MListEditor::btnOkPressed()
  */
 void MListEditor::btnAddPressed()
 {
-	if (isFiles)
+	if (type == PropFiles)
 	{
-		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы", "resources/icons");
+		QStringList fnames = QFileDialog::getOpenFileNames(this, "Выберите нужные файлы");
 		FillList(fnames);
 	}
 	else
@@ -110,4 +154,19 @@ void MListEditor::btnDelPressed()
 void MListEditor::FillList(QStringList items)
 {
 	list->addItems(items);
+}
+
+/**
+ * @brief MListEditor::FillTable - функция заполнения таблицы новыми элементами (для комбо)
+ * @param items - записываемые элементы
+ */
+void MListEditor::FillTable(QMap<QString, QStringList> items)
+{
+	for (auto it = items.begin(); it != items.end(); ++it)
+	{
+		int row = table->rowCount();
+		table->insertRow(row);
+		table->setItem(row, 0, new QTableWidgetItem(it.key()));
+		table->setItem(row, 1, new QTableWidgetItem(it.value().join(", ")));
+	}
 }

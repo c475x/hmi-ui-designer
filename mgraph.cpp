@@ -164,6 +164,12 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 	// Рисуем границу элемента
 	painter->drawRect(boundingRect());
 
+	// Индекс шрифта не может быть отрицательным
+	if (props->getProperty(PROP_FONT)->data.toInt() < 0)
+	{
+		props->setProperty(PROP_FONT, 0);
+	}
+
 	switch (props->getProperty(PROP_FONT)->data.toInt())
 	{
 		default:
@@ -172,7 +178,6 @@ void MLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 		case 1:
 			painter->setFont(QFont("Courier New", 60));
 		break;
-
 	}
 
 	// Рисуем текст, цвет текста черный
@@ -225,8 +230,8 @@ MProgress::MProgress(QString name, QString label, QRectF position, int16_t min, 
 	props->setProperty(PROP_MINVAL, min);
 	props->setProperty(PROP_MAXVAL, max);
 	props->setProperty(PROP_TEXT, label);
-	props->setProperty(PROP_FONT, 0);
 	props->setProperty(PROP_ISVISIBLE, true);
+	props->setProperty(PROP_FONT, 0);
 }
 /**
  * @brief MProgress::setValue - задает значение прогрессбара
@@ -292,7 +297,7 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 //
 
 /**
- * @brief MMenu::MMenu - создает объект класса MProgress
+ * @brief MMenu::MMenu - создает объект класса MMenu
  * @param val - новое значение прогрессбара
  */
 MMenu::MMenu(QString name, QRectF position)
@@ -343,12 +348,12 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 	painter->drawRect(boundingRect());
 
 	// Установка выбранного шрифта
-	// switch (props->getProperty(PROP_FONT)->data.toInt())
-	// {
-	// 	case 0:
-	// 		painter->setFont(QFont("Courier New", 30));
-	// 	break;
-	// }
+	switch (props->getProperty(PROP_FONT)->data.toInt())
+	{
+		case 0:
+			painter->setFont(QFont("Courier New", 30));
+		break;
+	}
 
 	// Получаем список текстовых строк меню
 	QStringList temp = props->getProperty(PROP_ITEMS)->data.toStringList();
@@ -418,6 +423,176 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 		// Рисуем текст
 		painter->drawStaticText(boundingRect().topLeft() + QPoint(24, rowHeight * (i - startPos)), QStaticText(temp.at(i)));
+
+		// Возвращаем черный цвет для следующей строки
+		if (i == props->getProperty(PROP_CURPOS)->data.toInt())
+			painter->setPen(Qt::black);
+	}
+}
+
+//
+// ---------------------------------------- COMBO --------------------------------------------
+//
+
+/**
+ * @brief MCombo::MCombo - создает объект класса MProgress
+ * @param val - новое значение прогрессбара
+ */
+MCombo::MCombo(QString name, QRectF position)
+{
+	this->name = name;
+	props = new MItemProperty(GuiCombo);
+
+	props->setProperty(PROP_X, position.topLeft().x());
+	props->setProperty(PROP_Y, position.topLeft().y());
+	props->setProperty(PROP_WIDTH, position.width());
+	props->setProperty(PROP_HEIGHT, position.height());
+	props->setProperty(PROP_STARTPOS, 0);
+	props->setProperty(PROP_CURPOS, -1);
+
+	// Тестовый список элементов
+	QVector<QPair<QString, QStringList>> items = { {"First", QStringList({"abc", "def", "ghi", "jkl"})},
+										{"Second", QStringList({"abc", "def", "ghi", "jkl"})},
+										{"Third", QStringList({"abc", "def", "ghi", "jkl"})},
+										{"Fourth", QStringList({"abc", "def", "ghi", "jkl"})}
+										};
+	props->setProperty(PROP_ITEMS, QVariant::fromValue(items));
+
+	// Список индексов выбранных строк, первоначально заполненный нулями
+	QVector<int> indexes;
+	indexes.fill(0, 64);
+	props->setProperty(PROP_CURITEMINDEX, QVariant::fromValue(indexes));
+
+	//props->setProperty(PROP_FONT, 0);
+}
+
+/**
+ * @brief MCombo::boundingRect - функция получения границ элемента
+ * @return - границы элемента
+ */
+QRectF MCombo::boundingRect() const
+{
+	return QRectF(
+		QPointF(PC_SCALE * props->getProperty(PROP_X)->data.toInt(),
+		PC_SCALE * props->getProperty(PROP_Y)->data.toInt()),
+		QSizeF(PC_SCALE * props->getProperty(PROP_WIDTH)->data.toInt(),
+		PC_SCALE * props->getProperty(PROP_HEIGHT)->data.toInt())
+				);
+}
+
+/**
+ * @brief MCombo::paint - функция отрисовки графического элемента
+ * @param painter - указатель на объект пеинтера
+ * @param option - указатель на объект опций элемента
+ * @param widget - указатель на виджет
+ */
+void MCombo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	Q_UNUSED(option)
+	Q_UNUSED(widget)
+
+	// Цвет обводки по умолчанию синий, при выделении - красный
+	QPen pen(Qt::DashLine);
+	pen.setColor(selected ? Qt::red : Qt::blue);
+	painter->setPen(pen);
+
+	// Рисуем границу элемента
+	painter->drawRect(boundingRect());
+
+	// Установка выбранного шрифта
+	switch (props->getProperty(PROP_FONT)->data.toInt())
+	{
+		case 0:
+			painter->setFont(QFont("Courier New", 30));
+		break;
+	}
+
+	// Получаем список текстовых строк и их возможных значений
+	QVector<QPair<QString, QStringList>> temp = props->getProperty(PROP_ITEMS)->data.value<QVector<QPair<QString, QStringList>>>();
+
+	// Индексы
+	QVector<int> indexes = props->getProperty(PROP_CURITEMINDEX)->data.value<QVector<int>>();
+
+	// По умолчанию шрифт строки черный
+	painter->setPen(Qt::black);
+	painter->setBrush(QBrush(Qt::black));
+
+	// Если текущая позиция неактивна (меньше нуля), отобразить как -1
+	if (props->getProperty(PROP_CURPOS)->data.toInt() < 0)
+	{
+		props->setProperty(PROP_CURPOS, -1);
+	}
+
+	// Если текущая позиция больше размера списка
+	if (props->getProperty(PROP_CURPOS)->data.toInt() >= temp.length())
+	{
+		props->setProperty(PROP_CURPOS, temp.length() - 1);
+	}
+
+	// Если текущая позиция меньше начальной позиции
+	if (props->getProperty(PROP_CURPOS)->data.toInt() < props->getProperty(PROP_STARTPOS)->data.toInt())
+	{
+		if (props->getProperty(PROP_STARTPOS)->data.toInt() > 0)
+		{
+			props->setProperty(PROP_STARTPOS, props->getProperty(PROP_CURPOS)->data.toInt());
+		}
+	}
+
+	// Если текущая позиция больше начальной позиции + размера блока
+	if (props->getProperty(PROP_CURPOS)->data.toInt() > props->getProperty(PROP_STARTPOS)->data.toInt() + qFloor(props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE / 35) - 1)
+	{
+		if (props->getProperty(PROP_STARTPOS)->data.toInt() + 1 < temp.length() - 1)
+		{
+			props->setProperty(PROP_STARTPOS, qBound(0, props->getProperty(PROP_CURPOS)->data.toInt() - qFloor(props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE / 35) + 1, temp.length() - 1));
+		}
+	}
+
+	// Начальная позиция
+	int startPos = props->getProperty(PROP_STARTPOS)->data.toInt();
+
+	// Высота строки
+	int rowHeight = 35;
+
+	// Перебираем все элементы из списка
+	for (uint16_t i = startPos; i < temp.length(); i++)
+	{
+		// Прерывание цикла отведено отдельно, чтобы изменение текущего элемента успело прорисоваться
+		if (rowHeight * (i + 1 - startPos) > props->getProperty(PROP_HEIGHT)->data.toInt() * PC_SCALE)
+		{
+			break;
+		}
+
+		// Если один из пунктов меню - с выделением...
+		if (i == props->getProperty(PROP_CURPOS)->data.toInt())
+		{
+			// Рисуем черный прямоугольник выделения
+			painter->drawRect(boundingRect().topLeft().x(),
+						  boundingRect().topLeft().y() + rowHeight * (i - startPos),
+						  boundingRect().topRight().x() - boundingRect().topLeft().x(),
+						  rowHeight
+						);
+
+			// Белый цвет для текста выделенного элемента
+			painter->setPen(Qt::white);
+		}
+
+		// Ширина значения свойства (для предотвращения накладывания названия на значение)
+		QFontMetrics metrics(painter->font());
+		int valWidth = metrics.horizontalAdvance(temp.at(i).second.at(indexes.at(i)));
+
+		// Границы названия свойства
+		QRectF propNameRect = QRectF(boundingRect().topLeft() + QPoint(24, rowHeight * (i - startPos)),
+									 QSizeF(boundingRect().width() - 48 - valWidth - 8, metrics.height()));
+
+		// Рисуем название свойства
+		painter->drawText(propNameRect, Qt::AlignLeft | Qt::AlignVCenter, temp.at(i).first);
+
+		// Границы значения свойства (с выравниванием по правому краю)
+		QRectF valRect = QRectF(boundingRect().topLeft() + QPoint(24, rowHeight * (i - startPos)),
+								QSizeF(boundingRect().width() - 48, metrics.height()));
+
+		// Рисуем значение свойства
+		painter->drawText(valRect, Qt::AlignRight | Qt::AlignVCenter, temp.at(i).second.at(indexes.at(i)));
 
 		// Возвращаем черный цвет для следующей строки
 		if (i == props->getProperty(PROP_CURPOS)->data.toInt())

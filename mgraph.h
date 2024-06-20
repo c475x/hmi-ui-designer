@@ -93,8 +93,8 @@ public:
 		PROP_MINVAL,
 		PROP_MAXVAL,
 		PROP_TEXT,
+		PROP_ISVISIBLE,
 		PROP_FONT,
-		PROP_ISVISIBLE
 	} ItemProperty;
 
 	MProgress() : MProgress("progress", "", QRectF(0, 0, 0, 0)) { }
@@ -131,6 +131,34 @@ public:
 	} ItemProperty;
 
 	MMenu(QString name, QRectF position);
+	QRectF boundingRect() const override;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+			   QWidget *widget) override;
+
+protected:
+	//uint8_t font;
+};
+
+/**
+ * @brief MCombo - класс элемента "Комбо"
+ */
+class MCombo : public MBase
+{
+public:
+	typedef enum
+	{
+		PROP_X,
+		PROP_Y,
+		PROP_WIDTH,
+		PROP_HEIGHT,
+		PROP_ITEMS,
+		PROP_STARTPOS,
+		PROP_CURPOS,
+		PROP_CURITEMINDEX,
+		PROP_FONT
+	} ItemProperty;
+
+	MCombo(QString name, QRectF position);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			   QWidget *widget) override;

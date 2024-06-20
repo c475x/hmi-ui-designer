@@ -51,7 +51,7 @@ public:
 	void setProp(GuiType gui, int32_t index, QVariant value);
 	void setList(MItemProperty *list);
 	PropItem *getProp(int32_t index);
-	bool setFileList(int32_t index, QStringList data);
+	bool setListData(int32_t index, QVariant data);
 
 protected:
 	MItemProperty *pCurPropList;	// Указатель на отображаемый объект свойств
