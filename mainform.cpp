@@ -231,30 +231,6 @@ bool MainForm::eventFilter(QObject *obj, QEvent *event)
 						propModel->setListData(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
 					}
 				}
-
-				// Если у выбранного свойства тип "Элементы комбо"...
-				if (propModel->getProp(pos)->type == PropCombo)
-				{
-					// Создаем объект формы диалога редактора
-					MListEditor *pLe = new MListEditor(propModel->getProp(pos)->data.toStringList(), propModel->getProp(pos)->type);
-					pLe->resize(640, 480);
-					pLe->setModal(true);
-					pLe->setWindowTitle("Редактор комбо");
-					pLe->setWindowFlags(pLe->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
-					// Соединяем сигнал-слот для получения результата от формы диалога редактора
-					connect(pLe, &MListEditor::dialogResult, this, &MainForm::dialogResult);
-
-					// Вызываем редактор модально
-					int res = pLe->exec();
-
-					// Если нажата кнопка "Ok", то значит в переменной tempPropertyList уже
-					// лежит новый список строк, сформированный редактором
-					if (res)
-					{
-						propModel->setListData(pos, tempPropertyList);  // Сохраняем новый список файлов в свойство
-					}
-				}
 			}
 		}
 	}

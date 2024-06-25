@@ -26,9 +26,7 @@ protected:
 	PropType type;
 	QLineEdit *edit;
 	QListWidget *list;
-	QTableWidget *table;
 	void FillList(QStringList items);
-	void FillTable(QMap<QString, QStringList> items);
 
 signals:
 	void dialogResult(const QStringList &data);

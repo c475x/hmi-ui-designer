@@ -43,18 +43,8 @@ MListEditor::MListEditor(QVariant data, PropType type, QWidget *parent) : QDialo
 {
 	this->type = type;
 
-	if (type == PropCombo)
-	{
-		table = new QTableWidget(this);
-		table->setColumnCount(2);
-		table->setHorizontalHeaderLabels(QStringList() << "Название" << "Строки");
-		FillTable(convertToMap(data));
-	}
-	else
-	{
-		list = new QListWidget(this);
-		FillList(data.toStringList());
-	}
+	list = new QListWidget(this);
+	FillList(data.toStringList());
 
 	QVBoxLayout *layMain = new QVBoxLayout(this);
 	QHBoxLayout *layKeys = new QHBoxLayout(this);
@@ -83,14 +73,7 @@ MListEditor::MListEditor(QVariant data, PropType type, QWidget *parent) : QDialo
 	layKeys->addWidget(btnDel);
 	layKeys->addWidget(btnOk);
 
-	if (type == PropCombo)
-	{
-		layMain->addWidget(table);
-	}
-	else
-	{
-		layMain->addWidget(list);
-	}
+	layMain->addWidget(list);
 
 	layMain->addLayout(layKeys);
 	this->setLayout(layMain);
@@ -154,19 +137,4 @@ void MListEditor::btnDelPressed()
 void MListEditor::FillList(QStringList items)
 {
 	list->addItems(items);
-}
-
-/**
- * @brief MListEditor::FillTable - функция заполнения таблицы новыми элементами (для комбо)
- * @param items - записываемые элементы
- */
-void MListEditor::FillTable(QMap<QString, QStringList> items)
-{
-	for (auto it = items.begin(); it != items.end(); ++it)
-	{
-		int row = table->rowCount();
-		table->insertRow(row);
-		table->setItem(row, 0, new QTableWidgetItem(it.key()));
-		table->setItem(row, 1, new QTableWidgetItem(it.value().join(", ")));
-	}
 }

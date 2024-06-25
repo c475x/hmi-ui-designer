@@ -19,10 +19,8 @@ typedef enum
 {
 	PropString,
 	PropNumber,
-	PropCombo,
 	PropFiles,
 	PropList,
-	PropComboIndex
 } PropType;
 
 #endif // MTYPES_H

@@ -151,14 +151,14 @@ public:
 		PROP_Y,
 		PROP_WIDTH,
 		PROP_HEIGHT,
+		PROP_LABEL,
 		PROP_ITEMS,
-		PROP_STARTPOS,
 		PROP_CURPOS,
-		PROP_CURITEMINDEX,
+		PROP_IS_SELECTED,
 		PROP_FONT
 	} ItemProperty;
 
-	MCombo(QString name, QRectF position);
+	MCombo(QString name, QString label, QRectF position);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			   QWidget *widget) override;
