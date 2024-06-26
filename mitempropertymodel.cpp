@@ -42,7 +42,6 @@ MItemProperty::MItemProperty(GuiType guiType)
 			items.append(new PropItem("Max", PropNumber, 0));
 			items.append(new PropItem("Text", PropString, ""));
 			items.append(new PropItem("Font", PropNumber, 0));
-			items.append(new PropItem("IsVisible", PropNumber, 1));
 		break;
 		case GuiCombo:
 			items.append(new PropItem("Label", PropString, "combo"));

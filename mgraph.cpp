@@ -230,7 +230,6 @@ MProgress::MProgress(QString name, QString label, QRectF position, int16_t min, 
 	props->setProperty(PROP_MINVAL, min);
 	props->setProperty(PROP_MAXVAL, max);
 	props->setProperty(PROP_TEXT, label);
-	props->setProperty(PROP_ISVISIBLE, true);
 	props->setProperty(PROP_FONT, 0);
 }
 /**
@@ -244,12 +243,6 @@ void MProgress::setValue(int16_t val)
 		props->setProperty(PROP_VALUE, val);
 	}
 }
-
-//void MProgress::setRange(int16_t min, int16_t max)
-//{
-//	this->min = min;
-//	this->max = max;
-//}
 
 /**
  * @brief MProgress::boundingRect - функция получения границ элемента
@@ -276,11 +269,40 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	Q_UNUSED(widget);
 	Q_UNUSED(option);
 
-	// Рисуем рамку
+	// Цвет обводки по умолчанию синий, при выделении - красный
+	QPen boundingBoxPen(Qt::DashLine);
+	boundingBoxPen.setColor(selected ? Qt::red : Qt::blue);
+	painter->setPen(boundingBoxPen);
+
+	// Рисуем границу элемента
+	painter->drawRect(boundingRect());
+
+	// Установка выбранного шрифта
+	switch (props->getProperty(PROP_FONT)->data.toInt())
+	{
+		case 0:
+			painter->setFont(QFont("Courier New", 30));
+		break;
+	}
+
+	// По умолчанию цвет черный
 	QPen pen;
-	pen.setWidth(4);
+	pen.setColor(Qt::black);
 	painter->setPen(pen);
-	painter->drawRect(boundingRect().x() + 2, boundingRect().y() + 2, boundingRect().width() - 5, boundingRect().height() - 4);
+
+	// Рисуем текст
+	QRectF textRect = QRectF(boundingRect().topLeft() + QPointF(2, 2), boundingRect().bottomRight() - QPointF(2, 2));
+	painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter, props->getProperty(PROP_TEXT)->data.toString());
+
+	// Расчет границ прогрессбара
+	QFontMetrics metrics(painter->font());
+	int textWidth = metrics.horizontalAdvance(props->getProperty(PROP_TEXT)->data.toString());
+	QRectF progressRect = QRectF(boundingRect().topLeft() + QPointF(2 + textWidth, 2), boundingRect().bottomRight() - QPointF(2, 2));
+
+	// Рисуем рамку
+	pen.setWidth(2);
+	painter->setPen(pen);
+	painter->drawRect(progressRect.x() + 2, progressRect.y() + 2, progressRect.width() - 4, progressRect.height() - 4);
 
 	// Рисуем заполнение
 	painter->setBrush(QBrush(Qt::black));
@@ -288,8 +310,8 @@ void MProgress::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	pen.setColor(Qt::black);
 	painter->setPen(pen);
 
-	float realWidth = ((float)props->getProperty(PROP_VALUE)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) / ((float)props->getProperty(PROP_MAXVAL)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) * (boundingRect().width() - 9);
-	painter->drawRect(boundingRect().x() + 4, boundingRect().y() + 4, realWidth, boundingRect().height() - 9);
+	float realWidth = ((float)props->getProperty(PROP_VALUE)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) / ((float)props->getProperty(PROP_MAXVAL)->data.toInt() - (float)props->getProperty(PROP_MINVAL)->data.toInt()) * (progressRect.width() - 6);
+	painter->drawRect(progressRect.x() + 2, progressRect.y() + 3, realWidth, progressRect.height() - 7);
 }
 
 //
@@ -450,7 +472,7 @@ MCombo::MCombo(QString name, QString label, QRectF position)
 	props->setProperty(PROP_LABEL, label);
 	props->setProperty(PROP_CURPOS, 0);
 	props->setProperty(PROP_IS_SELECTED, 0);
-	//props->setProperty(PROP_FONT, 0);
+	props->setProperty(PROP_FONT, 0);
 }
 
 /**

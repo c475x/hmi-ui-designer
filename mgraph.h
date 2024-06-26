@@ -93,7 +93,6 @@ public:
 		PROP_MINVAL,
 		PROP_MAXVAL,
 		PROP_TEXT,
-		PROP_ISVISIBLE,
 		PROP_FONT,
 	} ItemProperty;
 
