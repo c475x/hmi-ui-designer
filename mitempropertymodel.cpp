@@ -44,10 +44,8 @@ MItemProperty::MItemProperty(GuiType guiType)
 			items.append(new PropItem("Font", PropNumber, 0));
 		break;
 		case GuiCombo:
-			items.append(new PropItem("Label", PropString, "combo"));
 			items.append(new PropItem("Items", PropList, QStringList()));
 			items.append(new PropItem("CurPos", PropNumber, -1));
-			items.append(new PropItem("IsSelected", PropNumber, 0));
 			items.append(new PropItem("Font", PropNumber, 0));
 		break;
 	}

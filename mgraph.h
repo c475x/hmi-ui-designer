@@ -93,7 +93,7 @@ public:
 		PROP_MINVAL,
 		PROP_MAXVAL,
 		PROP_TEXT,
-		PROP_FONT,
+		PROP_FONT
 	} ItemProperty;
 
 	MProgress() : MProgress("progress", "", QRectF(0, 0, 0, 0)) { }
@@ -150,14 +150,12 @@ public:
 		PROP_Y,
 		PROP_WIDTH,
 		PROP_HEIGHT,
-		PROP_LABEL,
 		PROP_ITEMS,
 		PROP_CURPOS,
-		PROP_IS_SELECTED,
 		PROP_FONT
 	} ItemProperty;
 
-	MCombo(QString name, QString label, QRectF position);
+	MCombo(QString name, QRectF position);
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 			   QWidget *widget) override;

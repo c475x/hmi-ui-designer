@@ -460,7 +460,7 @@ void MMenu::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
  * @brief MCombo::MCombo - создает объект класса MProgress
  * @param val - новое значение прогрессбара
  */
-MCombo::MCombo(QString name, QString label, QRectF position)
+MCombo::MCombo(QString name, QRectF position)
 {
 	this->name = name;
 	props = new MItemProperty(GuiCombo);
@@ -469,9 +469,7 @@ MCombo::MCombo(QString name, QString label, QRectF position)
 	props->setProperty(PROP_Y, position.topLeft().y());
 	props->setProperty(PROP_WIDTH, position.width());
 	props->setProperty(PROP_HEIGHT, position.height());
-	props->setProperty(PROP_LABEL, label);
 	props->setProperty(PROP_CURPOS, 0);
-	props->setProperty(PROP_IS_SELECTED, 0);
 	props->setProperty(PROP_FONT, 0);
 }
 
@@ -497,18 +495,26 @@ QRectF MCombo::boundingRect() const
  */
 void MCombo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	Q_UNUSED(option)
-	Q_UNUSED(widget)
+	Q_UNUSED(widget);
+	Q_UNUSED(option);
 
-	// Цвет обводки по умолчанию синий, при выделении - красный
+	// Цвет обводки по умолчанию синий
+	// Цвет фона по умолчанию белый, при выделении - зеленый
 	QPen pen(Qt::DashLine);
-	pen.setColor(selected ? Qt::red : Qt::blue);
+	QBrush brush(selected ? Qt::green : Qt::white);
+	pen.setColor(Qt::blue);
 	painter->setPen(pen);
+	painter->setBrush(brush);
 
 	// Рисуем границу элемента
 	painter->drawRect(boundingRect());
 
-	// Установка выбранного шрифта
+	// Индекс шрифта не может быть отрицательным
+	if (props->getProperty(PROP_FONT)->data.toInt() < 0)
+	{
+		props->setProperty(PROP_FONT, 0);
+	}
+
 	switch (props->getProperty(PROP_FONT)->data.toInt())
 	{
 		case 0:
@@ -516,70 +522,32 @@ void MCombo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 		break;
 	}
 
-	// Получаем список текстовых строк и их возможных значений
-	QStringList temp = props->getProperty(PROP_ITEMS)->data.toStringList();
+	// Строки комбобокса
+	QStringList items = props->getProperty(PROP_ITEMS)->data.toStringList();
 
-	// По умолчанию шрифт строки черный
-	painter->setPen(Qt::black);
-	painter->setBrush(QBrush(Qt::black));
-
-	// Если текущая позиция неактивна (меньше нуля), отобразить как -1
-	if (props->getProperty(PROP_CURPOS)->data.toInt() < 0 && temp.length() > 0)
+	// Если текущая позиция больше размера списка
+	if (props->getProperty(PROP_CURPOS)->data.toInt() > items.length() - 1)
 	{
-		props->setProperty(PROP_CURPOS, 0);
+		props->setProperty(PROP_CURPOS, items.length() - 1);
 	}
-	else if (props->getProperty(PROP_CURPOS)->data.toInt() < 0)
+
+	// Если список пустой
+	if (items.isEmpty())
 	{
 		props->setProperty(PROP_CURPOS, -1);
 	}
 
-	// Если текущая позиция больше размера списка
-	if (props->getProperty(PROP_CURPOS)->data.toInt() >= temp.length())
+	// Если задано значение меньше нуля
+	if (props->getProperty(PROP_CURPOS)->data.toInt() < 0)
 	{
-		props->setProperty(PROP_CURPOS, temp.length() - 1);
+		props->setProperty(PROP_CURPOS, -1);
 	}
 
-	// Если один элемент является активным...
-	if (props->getProperty(PROP_IS_SELECTED)->data.toInt() == 1)
+	// Рисуем текст, цвет текста черный
+	painter->setPen(Qt::black);
+
+	if (props->getProperty(PROP_CURPOS)->data.toInt() != -1)
 	{
-		// Рисуем черный прямоугольник выделения
-		painter->drawRect(boundingRect().topLeft().x(),
-					  boundingRect().topLeft().y(),
-					  boundingRect().topRight().x() - boundingRect().topLeft().x(),
-					  boundingRect().height()
-					);
-
-		// Белый цвет для текста выделенного элемента
-		painter->setPen(Qt::white);
-	}
-
-	// Индекс выбранного элемента
-	int curPos = props->getProperty(PROP_CURPOS)->data.toInt();
-
-	// Ширина значения свойства (для предотвращения накладывания названия на значение)
-	QFontMetrics metrics(painter->font());
-	int valWidth = (curPos != -1) ? metrics.horizontalAdvance(temp.at(curPos)) : 0;
-
-	// Границы названия свойства
-	QRectF propNameRect = QRectF(boundingRect().topLeft() + QPoint(24, 0),
-								 QSizeF(boundingRect().width() - 48 - valWidth - 8, metrics.height()));
-
-	// Рисуем название свойства
-	painter->drawText(propNameRect, Qt::AlignLeft | Qt::AlignVCenter, props->getProperty(PROP_LABEL)->data.toString());
-
-	// Рисуем значение свойства
-	if (curPos != -1)
-	{
-		// Границы значения свойства (с выравниванием по правому краю)
-		QRectF valRect = QRectF(boundingRect().topLeft() + QPoint(24, 0),
-								QSizeF(boundingRect().width() - 48, metrics.height()));
-
-		painter->drawText(valRect, Qt::AlignRight | Qt::AlignVCenter, temp.at(curPos));
-	}
-
-	// Возвращаем черный цвет для следующей строки
-	if (props->getProperty(PROP_IS_SELECTED)->data.toInt() == 1)
-	{
-		painter->setPen(Qt::black);
+		painter->drawText(boundingRect(), items.at(props->getProperty(PROP_CURPOS)->data.toInt()));
 	}
 }

@@ -123,7 +123,7 @@ void MGuiItemsModel::addItem(GuiType type)
 			temp = new MMenu(generateElementName("menu", items), QRectF(QPointF(0, 8), QSizeF(128, (64-16))));
 		break;
 		case GuiCombo:
-			temp = new MCombo(generateElementName("combo", items), "combo", QRectF(QPointF(0, 8), QSizeF(128, 10)));
+			temp = new MCombo(generateElementName("combo", items), QRectF(QPointF(0, 0), QSizeF(128, 8)));
 		break;
 	}
 
